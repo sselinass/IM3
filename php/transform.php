@@ -1,51 +1,63 @@
 <?php
+/**
+ * TRANSFORM-Skript für PubliBike Bern Daten.
+ * Führt die Aggregation der Gesamtwerte (free bikes, free slots, slots)
+ * aus den Rohdaten durch.
+ *
+ * PHP-Version: 7.4.33
+ */
 
-/* ============================================================================
-   HANDLUNGSANWEISUNG (transform.php)
-   0) Schau dir die Rohdaten genau an und plane exakt, wie du die Daten umwandeln möchtest (auf Papier)
-   1) Binde extract.php ein und erhalte das Rohdaten-Array.
-   2) Definiere Mapping Koordinaten → Anzeigename (z. B. Bern/Chur/Zürich).
-   3) Konvertiere Einheiten (z. B. °F → °C) und runde sinnvoll (Celsius = (Fahrenheit - 32) * 5 / 9).
-   4) Leite eine einfache "condition" ab (z. B. sonnig/teilweise bewölkt/bewölkt/regnerisch).
-   5) Baue ein kompaktes, flaches Array je Standort mit den Ziel-Feldern.
-   6) Optional: Sortiere die Werte (z. B. nach Zeit), entferne irrelevante Felder.
-   7) Validiere Pflichtfelder (location, temperature_celsius, …).
-   8) Kodieren: json_encode(..., JSON_PRETTY_PRINT) → JSON-String.
-   9) GIB den JSON-String ZURÜCK (return), nicht ausgeben – für den Load-Schritt.
-  10) Fehlerfälle als Exception nach oben weiterreichen (kein HTML/echo).
-   ============================================================================ */
+// -----------------------------------------------------------------------------
+// 1. ROHDATEN LADEN (Integration mit extract.php)
+// -----------------------------------------------------------------------------
 
-// Bindet das Skript extract.php für Rohdaten ein und speichere es in $data
-$publibikedata = include('extract.php');
-print_r($publibikedata);
+// Wir gehen davon aus, dass 'extract.php' die API-Daten abruft und als
+// assoziatives PHP-Array zurückgibt.
+// Speichern Sie den Rückgabewert in der Variablen $rawData.
+$rawData = require 'extract.php'; 
 
-// Definiert eine Zuordnung von Koordinaten zu Stadtnamen
-$locationsMap = [
-    '46.94,7.44' => 'Bern',
-    '46.84,9.52' => 'Chur',
-    '47.36,8.559999' => 'Zürich',
-];
-
-// Funktion, um Fahrenheit in Celsius umzurechnen
-
-// Neue Funktion zur Bestimmung der Wetterbedingung
-
-
-
-// Initialisiert ein Array, um die transformierten Daten zu speichern
-$transformedData = [];
-
-// Transformiert und fügt die notwendigen Informationen hinzu
-foreach ($publibikedata as $location) {
-    // Bestimmt den Stadtnamen anhand von Breitengrad und Längengrad
-
-    // Wandelt die Temperatur in Celsius um und rundet sie
-
-    // Bestimmt die Wetterbedingung
-
-    // Konstruiert die neue Struktur mit allen angegebenen Feldern, einschließlich des neuen 'condition'-Feldes
+// Sicherheitsprüfung, ob die erwartete Datenstruktur existiert
+if (!isset($rawData['network']['stations']) || !is_array($rawData['network']['stations'])) {
+    die("❌ Fehler: Die Rohdaten konnten nicht geladen werden oder das 'stations'-Array fehlt.");
 }
 
-// Kodiert die transformierten Daten in JSON
+$stations = $rawData['network']['stations'];
 
-// Gibt die JSON-Daten zurück, anstatt sie auszugeben
+// -----------------------------------------------------------------------------
+// 2. DATENTRANSFORMATION (Aggregation)
+//    - Zählt alle free bikes, free slots und total slots der gesamten API zusammen.
+// -----------------------------------------------------------------------------
+
+$totalFreeBikes = 0;
+$totalEmptySlots = 0;
+$totalSlots = 0;
+
+foreach ($stations as $station) {
+    // Aggregiere 'free_bikes'
+    // Verwenden Sie (int) cast und Null Coalescing Operator (?? 0) für Robustheit
+    $totalFreeBikes += (int) ($station['free_bikes'] ?? 0);
+    
+    // Aggregiere 'empty_slots' (entspricht 'emptyslots')
+    $totalEmptySlots += (int) ($station['empty_slots'] ?? 0);
+    
+    // Aggregiere 'slots' (Gesamtanzahl der Stellplätze pro Station)
+    // Die Slots sind im 'extra'-Array verschachtelt
+    $totalSlots += (int) ($station['extra']['slots'] ?? 0);
+}
+
+// Erstellen des assoziativen Arrays "transformedData" für den Datenbank-INSERT
+// Die Schlüsselnamen entsprechen den Spaltennamen der Tabelle 'Publibike'
+$transformedData = [
+    'freebikes' => $totalFreeBikes,
+    'emptyslots' => $totalEmptySlots,
+    'slots' => $totalSlots,
+];
+
+echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";
+print_r($transformedData);
+
+// Am Ende des Skripts können Sie $transformedData für das nachfolgende Load-Skript
+// (oder den nächsten Abschnitt im selben Skript, wenn Sie alles zusammenführen)
+// bereitstellen. Zum Beispiel könnten Sie es für ein separates Load-Skript zurückgeben.
+// return $transformedData;
+// Wenn Sie diesen Teil in einem Gesamt-Skript ausführen, können Sie einfach fortfahren.
