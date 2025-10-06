@@ -35,7 +35,7 @@ function fetchWeatherData()
 
     // Dekodiert die JSON-Antwort und gibt Daten zurück
     $weatherData = json_decode($response, true);
-    print_r($weatherData);
+    // print_r($weatherData);
     return $weatherData;
 }
 

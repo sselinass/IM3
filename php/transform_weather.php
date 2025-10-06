@@ -1,20 +1,19 @@
 <?php
 /**
- * TRANSFORM-Skript für Wetterdaten (sunshine/daylight duration).
- * Führt die Umrechnung von Sekunden in aufgerundete Stunden durch.
+ * TRANSFORM-Skript für PubliBike Bern Daten.
+ * Führt die Aggregation der Gesamtwerte (free bikes, free slots, slots)
+ * aus den Rohdaten durch.
  *
  * PHP-Version: 7.4.33
  */
 
 // -----------------------------------------------------------------------------
-// 1. KONFIGURATION UND ROHDATEN LADEN
+// 1. ROHDATEN LADEN (Integration mit extract.php)
 // -----------------------------------------------------------------------------
 
-// Lade die Datenbank-Zugangsdaten (wird im Load-Schritt benötigt)
-$config = require 'config.php';
-
-// Laden der Rohdaten (Integration mit extract.php).
-// extract.php muss die API-Daten abrufen und das assoziative PHP-Array zurückgeben.
+// Wir gehen davon aus, dass 'extract.php' die API-Daten abruft und als
+// assoziatives PHP-Array zurückgibt.
+// Speichern Sie den Rückgabewert in der Variablen $rawData.
 $rawData = require 'extract_weather.php';
 
 // -----------------------------------------------------------------------------
@@ -44,8 +43,8 @@ $transformedData = [
     'daylight_duration' => $daylightHours,
 ];
 
-echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";
-print_r($transformedData);
+// echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";
+// print_r($transformedData);
 
 // Das $transformedData Array ist nun bereit für den Load-Schritt.
 ?>
