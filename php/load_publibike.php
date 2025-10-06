@@ -18,23 +18,27 @@
 include 'transform_publibike.php';
 print_r($transformedData);
 
-// Dekodiere die JSON-Daten zu einem Array
-
 // Binde die Datenbankkonfiguration ein
 require_once 'config.php';
 
 try {
     // Erstellt eine neue PDO-Instanz mit der Konfiguration aus config.php
-
+    $pdo = new PDO($dsn, $username, $password, $options);
 
     // SQL-Query mit Platzhaltern für das Einfügen von Daten
-    $sql = "";
+    $sql = "INSERT INTO `Publibike`(`freebikes`, `emptyslots`, `slots`) 
+             VALUES (:freebikes, :emptyslots, :slots);";
 
     // Bereitet die SQL-Anweisung vor
-    // $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare($sql);
 
     // Fügt jedes Element im Array in die Datenbank ein
-    foreach ($dataArray as $item) {
+    foreach ($transformedData as $item) {
+        $stmt->execute([
+            ':freebikes' => $transformedData['freebikes'],
+            ':emptyslots' => $transformedData['emptyslots'],
+            ':slots' => $transformedData['slots'],
+        ]);
     }
 
     echo "Daten erfolgreich eingefügt.";
