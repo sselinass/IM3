@@ -41,5 +41,30 @@ function fetchPubliBikeData()
     return $publibikedata;
 }
 
+function fetchWeatherData()
+{
+    $url = "https://api.open-meteo.com/v1/forecast?latitude=46.9481&longitude=7.4474&daily=sunshine_duration,daylight_duration&timezone=Europe%2FBerlin&forecast_days=1&ref=freepublicapis.com";
+
+    // Initialisiert eine cURL-Sitzung
+    $ch = curl_init($url);
+
+    // Setzt Optionen
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    // Führt die cURL-Sitzung aus und erhält den Inhalt
+    $response = curl_exec($ch);
+    // echo $response;
+    // echo "<br><br>";
+    // print_r($response);
+
+    // Schließt die cURL-Sitzung
+    curl_close($ch);
+
+    // Dekodiert die JSON-Antwort und gibt Daten zurück
+    $weatherData = json_decode($response, true);
+    // print_r($weatherData);
+    return $weatherData;
+}
+
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
-return fetchPubliBikeData();
+return fetchWeatherData();
