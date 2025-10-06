@@ -54,8 +54,8 @@ $transformedData = [
     'slots' => $totalSlots,
 ];
 
-echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";
-print_r($transformedData);
+// echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";
+// print_r($transformedData);
 
 // Am Ende des Skripts können Sie $transformedData für das nachfolgende Load-Skript
 // (oder den nächsten Abschnitt im selben Skript, wenn Sie alles zusammenführen)

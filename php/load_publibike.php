@@ -15,10 +15,13 @@
 
 
 // Transformations-Skript  als 'transform.php' einbinden
+include 'transform_publibike.php';
+print_r($transformedData);
 
 // Dekodiere die JSON-Daten zu einem Array
 
 // Binde die Datenbankkonfiguration ein
+require_once 'config.php';
 
 try {
     // Erstellt eine neue PDO-Instanz mit der Konfiguration aus config.php
@@ -28,7 +31,7 @@ try {
     $sql = "";
 
     // Bereitet die SQL-Anweisung vor
-    $stmt = $pdo->prepare($sql);
+    // $stmt = $pdo->prepare($sql);
 
     // Fügt jedes Element im Array in die Datenbank ein
     foreach ($dataArray as $item) {
