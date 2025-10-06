@@ -36,10 +36,10 @@ function fetchPubliBikeData()
 
     // Dekodiert die JSON-Antwort und gibt Daten zurück
     $data = json_decode($response, true);
-
     // echo "<br><br>";
     // echo ($data);
     // print_r($data);
+    return $data;
 }
 
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
