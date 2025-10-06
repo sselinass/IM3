@@ -14,7 +14,7 @@
   10) Fehlerfälle: Exception/Fehlerobjekt nach oben reichen (kein HTML ausgeben).
    ============================================================================ */
 
-function fetchWeatherData()
+function fetchPubliBikeData()
 {
     $url = "https://api.citybik.es/v2/networks/publibike-bern";
 
@@ -27,16 +27,20 @@ function fetchWeatherData()
     // Führt die cURL-Sitzung aus und erhält den Inhalt
     $response = curl_exec($ch);
 
-    // Schließt die cURL-Sitzung
-    echo $response;
-    echo "<br><br>";
-    print_r($response);
+    // echo $response;
+    // echo "<br><br>";
+    // print_r($response);
 
+    // Schließt die cURL-Sitzung
     curl_close($ch);
 
     // Dekodiert die JSON-Antwort und gibt Daten zurück
+    $data = json_decode($response, true);
 
+    // echo "<br><br>";
+    // echo ($data);
+    // print_r($data);
 }
 
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
-return fetchWeatherData();
+return fetchPubliBikeData();
