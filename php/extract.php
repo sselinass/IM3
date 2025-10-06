@@ -26,7 +26,6 @@ function fetchPubliBikeData()
 
     // Führt die cURL-Sitzung aus und erhält den Inhalt
     $response = curl_exec($ch);
-
     // echo $response;
     // echo "<br><br>";
     // print_r($response);
@@ -35,11 +34,11 @@ function fetchPubliBikeData()
     curl_close($ch);
 
     // Dekodiert die JSON-Antwort und gibt Daten zurück
-    $data = json_decode($response, true);
+    $publibikedata = json_decode($response, true);
     // echo "<br><br>";
     // echo ($data);
     // print_r($data);
-    return $data;
+    return $publibikedata;
 }
 
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
