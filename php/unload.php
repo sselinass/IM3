@@ -50,6 +50,3 @@ try {
     echo json_encode(['error' => 'An error occurred']);
 }
 ?>
-
-
-
