@@ -1,6 +1,5 @@
-console.log("blub");
-
-// api url https://im3.selina-schoepfer.ch/php/unload.php 
+// test js file
+// console.log("blub");
 
 fetch('https://im3.selina-schoepfer.ch/php/unload.php')
     .then(response => response.json())
@@ -10,3 +9,5 @@ fetch('https://im3.selina-schoepfer.ch/php/unload.php')
     .catch(error => {
         console.error('Error fetching data:', error);
     });
+
+ö
