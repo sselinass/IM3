@@ -13,7 +13,40 @@
   10) Keine HTML-Ausgabe; keine var_dump in Prod.
    ============================================================================ */
 
-
-require_once '../config.php'; // Stellen Sie sicher, dass dies auf Ihre tatsächliche Konfigurationsdatei verweist
-
 header('Content-Type: application/json');
+
+try {
+    // 2) Config einbinden
+    require_once 'config.php';
+    
+    // 3) PDO-Verbindung aufbauen
+    $pdo = new PDO($dsn, $username, $password, $options);
+    
+    // 4) SQL-Query vorbereiten
+    $sql = "SELECT * FROM `Publibike` WHERE 1";
+    $stmt = $pdo->prepare($sql);
+    
+    // 5) Query ausführen
+    $stmt->execute();
+    
+    // 6) Daten abrufen
+    $publibike_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // 7) JSON-Response senden
+    http_response_code(200);
+    echo json_encode($publibike_data);
+    
+} catch (PDOException $e) {
+    // 9) Fehlerbehandlung
+    http_response_code(500);
+    echo json_encode(['error' => 'Database error occurred']);
+    
+} catch (Exception $e) {
+    // Allgemeine Fehlerbehandlung
+    http_response_code(500);
+    echo json_encode(['error' => 'An error occurred']);
+}
+?>
+
+
+
