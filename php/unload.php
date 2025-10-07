@@ -15,7 +15,7 @@
 
 require_once 'config.php';
 
-header('Content-Type: application/json');
+header("Content-Type: application/json");
 
 $sqls = [
     "publibike" => "SELECT * FROM `Publibike` WHERE 1",
