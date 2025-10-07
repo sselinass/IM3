@@ -35,6 +35,13 @@ try {
         $response[$table] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
+   //  $sql = "SELECT * FROM `Publibike` JOIN `Weather` ON `Publibike`.`timestamp` = `Weather`.`timestamp` WHERE 1";
+
+   //  $stmt = $pdo->prepare($sql);
+   //  $stmt->execute();
+
+   //  $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
+   
     // JSON-Response senden
     http_response_code(200);
     echo json_encode($response);
