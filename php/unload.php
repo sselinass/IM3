@@ -38,7 +38,7 @@ try {
     // JSON-Response senden
     http_response_code(200);
     echo json_encode($response);
-    
+
 } catch (PDOException $e) {
     // Fehlerbehandlung
     http_response_code(500);
