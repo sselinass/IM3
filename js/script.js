@@ -23,7 +23,58 @@ function fetchData() {
         });
 }
 
-// Standalone chart creation function
+// Sunlight Chart
+function createSunlightChart(apiData) {
+    let SunlightChart = document.getElementById('SunlightChart');
+
+    // Check if canvas element exists
+    if (!SunlightChart) {
+        console.error('Canvas element with id "SunlightChart" not found');
+        return;
+    }
+    
+    // Extract weather data from API response
+    const weatherData = apiData.weather[0]; // Get first weather entry
+    const daylightHours = weatherData.daylight_duration;
+    const nightHours = 24 - daylightHours;
+
+    const chartData = {
+        labels: ['Tageslicht', 'dunkel'],
+        datasets: [
+            {
+                label: 'Stunden',
+                data: [daylightHours, nightHours],
+                backgroundColor: [
+                    '#a3aed1ff',
+                    '#303436ff',
+                ],
+                hoverOffset: 4,
+                borderWidth: 0,
+            }
+        ]
+    };
+
+    const config = {
+        type: 'doughnut',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Tägliche Sonnenscheindauer'
+                }
+            }
+        },
+    };
+
+    const chart = new Chart(SunlightChart, config);
+}
+
+// Sunshine Chart
 function createSunshineChart(apiData) {
     let SunshineChart = document.getElementById('SunshineChart');
     
@@ -41,15 +92,14 @@ function createSunshineChart(apiData) {
     const nonSunshineHours = daylightHours - sunshineHours;
 
     const chartData = {
-        labels: ['Sonnenschein', 'Tageslicht ohne Sonne', 'Nacht'],
+        labels: ['Sonnenschein', 'Tageslicht ohne Sonne'],
         datasets: [
             {
                 label: 'Stunden',
-                data: [sunshineHours, nonSunshineHours, nightHours],
+                data: [sunshineHours, nonSunshineHours],
                 backgroundColor: [
-                    '#FFD700', // Gold for sunshine
-                    '#87CEEB', // Sky blue for daylight without sunshine
-                    '#2F4F4F', // Dark slate gray for night
+                    '#FFD700',
+                    '#87CEEB',
                 ],
                 hoverOffset: 4,
                 borderWidth: 0,
@@ -81,6 +131,7 @@ function createSunshineChart(apiData) {
 function initApp() {
     fetchData()
         .then(data => {
+            createSunlightChart(data);
             createSunshineChart(data);
         })
         .catch(error => {
