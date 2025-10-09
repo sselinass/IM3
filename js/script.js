@@ -1,15 +1,6 @@
 // test js file
 // console.log("blub");
 
-// fetch('https://im3.selina-schoepfer.ch/php/unload.php')
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log(data);
-//     })
-//     .catch(error => {
-//         console.error('Error fetching data:', error);
-//     });
-
 function fetchData() {
     return fetch('https://im3.selina-schoepfer.ch/php/unload.php')
         .then(response => response.json())
@@ -39,14 +30,14 @@ function createSunlightChart(apiData) {
     const nightHours = 24 - daylightHours;
 
     const chartData = {
-        labels: ['Tageslicht', 'dunkel'],
+        // labels: ['Tageslicht', 'dunkel'],
         datasets: [
             {
                 label: 'Stunden',
                 data: [daylightHours, nightHours],
                 backgroundColor: [
-                    '#a3aed1ff',
-                    '#303436ff',
+                    '#76acfdff',
+                    '#c6dde8ff',
                 ],
                 hoverOffset: 4,
                 borderWidth: 0,
@@ -65,7 +56,7 @@ function createSunlightChart(apiData) {
                 },
                 title: {
                     display: true,
-                    text: 'Tägliche Sonnenscheindauer'
+                    // text: 'Tageslichtdauer'
                 }
             }
         },
@@ -92,14 +83,15 @@ function createSunshineChart(apiData) {
     const nonSunshineHours = daylightHours - sunshineHours;
 
     const chartData = {
-        labels: ['Sonnenschein', 'Tageslicht ohne Sonne'],
+        // labels: ['Sonnenschein', 'Tageslicht ohne Sonne', 'kein Tageslicht'],
         datasets: [
             {
                 label: 'Stunden',
-                data: [sunshineHours, nonSunshineHours],
+                data: [sunshineHours, nonSunshineHours, nightHours],
                 backgroundColor: [
                     '#FFD700',
-                    '#87CEEB',
+                    '#fdff80ff',
+                    'transparent',
                 ],
                 hoverOffset: 4,
                 borderWidth: 0,
@@ -118,7 +110,7 @@ function createSunshineChart(apiData) {
                 },
                 title: {
                     display: true,
-                    text: 'Tägliche Sonnenscheindauer'
+                    // text: 'Sonnenscheindauer'
                 }
             }
         },
