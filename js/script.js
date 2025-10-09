@@ -1,134 +1,115 @@
 // test js file
 // console.log("blub");
 
+// Fetch data from the API
 function fetchData() {
     return fetch('https://im3.selina-schoepfer.ch/php/unload.php')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             console.log(data);
-            return data; // Return the data for chaining
+            return data;
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            throw error; // Re-throw to handle in initApp
+            throw error;
         });
 }
 
-// Sunlight Chart
-function createSunlightChart(apiData) {
-    let SunlightChart = document.getElementById('SunlightChart');
-
-    // Check if canvas element exists
-    if (!SunlightChart) {
-        console.error('Canvas element with id "SunlightChart" not found');
-        return;
-    }
+// Charts (Sunshine and Sunlight charts combined, structure from Chart.js)
+function createChart(canvasId, chartType, apiData) {
+    const canvas = document.getElementById(canvasId);
     
-    // Extract weather data from API response
-    const weatherData = apiData.weather[0]; // Get first weather entry
+    if (!canvas) {
+        console.error(`Canvas element with id "${canvasId}" not found`);
+        return null;
+    }
+
+    const weatherData = apiData.weather[0];
     const daylightHours = weatherData.daylight_duration;
-    const nightHours = 24 - daylightHours;
-
-    const chartData = {
-        // labels: ['Tageslicht', 'dunkel'],
-        datasets: [
-            {
-                label: 'Stunden',
-                data: [daylightHours, nightHours],
-                backgroundColor: [
-                    '#76acfdff',
-                    '#c6dde8ff',
-                ],
-                hoverOffset: 4,
-                borderWidth: 0,
-            }
-        ]
-    };
-
-    const config = {
-        type: 'doughnut',
-        data: chartData,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    // text: 'Tageslichtdauer'
-                }
-            }
-        },
-    };
-
-    const chart = new Chart(SunlightChart, config);
-}
-
-// Sunshine Chart
-function createSunshineChart(apiData) {
-    let SunshineChart = document.getElementById('SunshineChart');
-    
-    // Check if canvas element exists
-    if (!SunshineChart) {
-        console.error('Canvas element with id "SunshineChart" not found');
-        return;
-    }
-    
-    // Extract weather data from API response
-    const weatherData = apiData.weather[0]; // Get first weather entry
     const sunshineHours = weatherData.sunshine_duration;
-    const daylightHours = weatherData.daylight_duration;
     const nightHours = 24 - daylightHours;
     const nonSunshineHours = daylightHours - sunshineHours;
 
-    const chartData = {
-        // labels: ['Sonnenschein', 'Tageslicht ohne Sonne', 'kein Tageslicht'],
-        datasets: [
-            {
-                label: 'Stunden',
-                data: [sunshineHours, nonSunshineHours, nightHours],
-                backgroundColor: [
-                    '#FFD700',
-                    '#fdff80ff',
-                    'transparent',
-                ],
+    let chartData;
+    
+    if (chartType === 'sunlight') {
+        chartData = {
+            // labels: ['Tageslicht', 'Dunkel'],
+            datasets: [{
+                // label: 'Stunden',
+                data: [daylightHours, nightHours],
+                backgroundColor: ['#76acfdff', '#c6dde8ff'],
                 hoverOffset: 4,
                 borderWidth: 0,
-            }
-        ]
-    };
+            }]
+        };
+    } else if (chartType === 'sunshine') {
+        chartData = {
+            // labels: ['Sonnenschein', 'Tageslicht ohne Sonne', 'Kein Tageslicht'],
+            datasets: [{
+                // label: 'Stunden',
+                data: [sunshineHours, nonSunshineHours, nightHours],
+                backgroundColor: ['#FFD700', '#fdff80ff', 'transparent'],
+                hoverOffset: 4,
+                borderWidth: 0,
+            }]
+        };
+    }
 
     const config = {
         type: 'doughnut',
         data: chartData,
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'top',
                 },
-                title: {
-                    display: true,
-                    // text: 'Sonnenscheindauer'
-                }
+                // title: {
+                //     display: true,
+                // text: chartType === 'sunlight' ? 'Tageslichtdauer' : 'Sonnenscheindauer'
+                // }
             }
         },
     };
 
-    const chart = new Chart(SunshineChart, config);
+    return new Chart(canvas, config);
 }
 
+// Store chart instances for potential cleanup
+let charts = [];
+
 // Initialize the application
-function initApp() {
-    fetchData()
-        .then(data => {
-            createSunlightChart(data);
-            createSunshineChart(data);
-        })
-        .catch(error => {
-            console.error('Failed to initialize app:', error);
-        });
+async function initApp() {
+    try {
+        const data = await fetchData();
+        
+        // Validate data structure
+        if (!data.weather || !Array.isArray(data.weather) || data.weather.length === 0) {
+            throw new Error('Invalid weather data structure');
+        }
+
+        // Clear existing charts
+        charts.forEach(chart => chart.destroy());
+        charts = [];
+
+        // Create charts
+        const sunlightChart = createChart('SunlightChart', 'sunlight', data);
+        const sunshineChart = createChart('SunshineChart', 'sunshine', data);
+        
+        // Store chart instances
+        if (sunlightChart) charts.push(sunlightChart);
+        if (sunshineChart) charts.push(sunshineChart);
+        
+    } catch (error) {
+        console.error('Failed to initialize app:', error);
+    }
 }
 
 // Call the init function when the page loads
