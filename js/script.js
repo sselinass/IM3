@@ -9,5 +9,3 @@ fetch('https://im3.selina-schoepfer.ch/php/unload.php')
     .catch(error => {
         console.error('Error fetching data:', error);
     });
-
-ö
