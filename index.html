@@ -9,11 +9,51 @@
     <title>ride&shine</title>
 </head>
 <body>
-    <h1>RIDE & SHINE BERN</h1>
-    <p>Der Vergleich von Sonnenstunden und Fahrverhalten in Bern</p>
+    <div>
+        <h1>RIDE & SHINE BERN</h1>
+        <h2>Der Vergleich von Sonnenstunden und Fahrverhalten in Bern</h2>
+    </div>
 
-    <!-- Alles für Chart im HTML -->
-    <canvas id="SunshineChart"></canvas>
+    <div id="viewButtonsContainer">
+        <p>Tages- oder Wochenansicht:</p>
+        <button id="dayView">Tag</button>
+        <button id="weekView">Woche</button>
+    </div>
+
+    <div id="datePickerContainer">
+        <p>
+            <p>wähle ein Datum:</p>
+            <input type="date" id="datePicker" />
+        </p>
+    </div>
+
+    <div>
+        <h2>solange war es hell:</h2>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="SunlightChart"></canvas>
+    </div>
+
+    <div>
+        <h2>... und soviel schien davon auch wirklich die Sonne ...</h2>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="SunshineChart"></canvas>
+    </div>
+
+    <div>
+        <h2>... insgesamt waren ...</h2>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="SunshineChart"></canvas>
+    </div>
+
+    <div>
+        <h2>... tapfere Kämpfer:Innen unterwegs</h2>
+    </div>
     
     <script type="module" src="js/script.js"></script> <!-- kommt ganz am Schluss -->
     <!--  evtl. weitere JS verlinken -->
