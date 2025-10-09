@@ -29,17 +29,14 @@ function createSunshineChart(apiData) {
     
     // Beispiel-Daten aus Ihrer API verwenden
     const chartData = {
-        labels: ['Publibike Stationen', 'Wetter Daten', 'Sonnenschein', 'Tageslicht', 'Andere'],
+        labels: ['Publibike Stationen', 'Wetter Daten'],
         datasets: [
             {
                 label: 'Daten Übersicht',
-                data: [25, 30, 20, 15, 10], // Ersetzen Sie durch echte Werte
+                data: [25, 30], // Ersetzen Sie durch echte Werte
                 backgroundColor: [
                     '#FF6384',
                     '#36A2EB', 
-                    '#FFCE56',
-                    '#4BC0C0',
-                    '#9966FF'
                 ],
             }
         ]
