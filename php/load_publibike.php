@@ -16,7 +16,7 @@
 
 // Transformations-Skript  als 'transform.php' einbinden
 include 'transform_publibike.php';
-print_r($transformedData);
+var_dump($transformedData);   
 
 // Binde die Datenbankkonfiguration ein
 require_once 'config.php';
@@ -33,13 +33,11 @@ try {
     $stmt = $pdo->prepare($sql);
 
     // Fügt jedes Element im Array in die Datenbank ein
-    foreach ($transformedData as $item) {
-        $stmt->execute([
-            ':freebikes' => $transformedData['freebikes'],
-            ':emptyslots' => $transformedData['emptyslots'],
-            ':slots' => $transformedData['slots'],
-        ]);
-    }
+    $stmt->execute([
+        ':freebikes' => $transformedData['total_data']['freebikes'],
+        ':emptyslots' => $transformedData['total_data']['emptyslots'],
+        ':slots' => $transformedData['total_data']['slots'],
+    ]);
 
     echo "Daten erfolgreich eingefügt.";
 } catch (PDOException $e) {

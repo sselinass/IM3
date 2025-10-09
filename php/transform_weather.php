@@ -39,8 +39,10 @@ $daylightHours = (int)ceil($daylightSeconds / 3600);
 // Erstellen des assoziativen Arrays "transformedData" für den Datenbank-INSERT
 // Die Schlüsselnamen entsprechen den Spaltennamen der Tabelle 'Weather'
 $transformedData = [
-    'sunshine_duration' => $sunshineHours,
-    'daylight_duration' => $daylightHours,
+    'totalData' => [
+        'sunshine_duration' => $sunshineHours,
+        'daylight_duration' => $daylightHours,
+    ]
 ];
 
 // echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";

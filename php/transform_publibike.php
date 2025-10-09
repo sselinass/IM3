@@ -49,9 +49,11 @@ foreach ($stations as $station) {
 // Erstellen des assoziativen Arrays "transformedData" für den Datenbank-INSERT
 // Die Schlüsselnamen entsprechen den Spaltennamen der Tabelle 'Publibike'
 $transformedData = [
-    'freebikes' => $totalFreeBikes,
-    'emptyslots' => $totalEmptySlots,
-    'slots' => $totalSlots,
+    'total_data' => [
+        'freebikes' => $totalFreeBikes,
+        'emptyslots' => $totalEmptySlots,
+        'slots' => $totalSlots,
+    ]
 ];
 
 // echo "✅ Transformation abgeschlossen. Aggregierte Daten (klar für DB-Insert):\n";

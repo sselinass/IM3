@@ -16,7 +16,7 @@
 
 // Transformations-Skript  als 'transform.php' einbinden
 include 'transform_weather.php';
-print_r($transformedData);
+var_dump($transformedData);
 
 // Binde die Datenbankkonfiguration ein
 require_once 'config.php';
@@ -33,12 +33,10 @@ try {
     $stmt = $pdo->prepare($sql);
 
     // Fügt jedes Element im Array in die Datenbank ein
-    foreach ($transformedData as $item) {
-        $stmt->execute([
-            ':sunshine_duration' => $transformedData['sunshine_duration'],
-            ':daylight_duration' => $transformedData['daylight_duration'],
-        ]);
-    }
+    $stmt->execute([
+        ':sunshine_duration' => $transformedData['totalData']['sunshine_duration'],
+        ':daylight_duration' => $transformedData['totalData']['daylight_duration'],
+    ]);
 
     echo "Daten erfolgreich eingefügt.";
 } catch (PDOException $e) {
