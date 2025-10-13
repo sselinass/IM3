@@ -72,6 +72,18 @@ function findPublibikeDataByDate(selectedDate, apiData) {
     return null;
 }
 
+// Add this new function after the existing functions
+function updateBackgroundColor(sunshineHours) {
+    const body = document.body;
+    if (sunshineHours >= 6) {
+        body.style.backgroundColor = '#f1e19eff'; // Warm yellow (cornsilk)
+        body.style.transition = 'background-color 0.5s ease';
+    } else {
+        body.style.backgroundColor = '#9fd1ffff'; // Light blue
+        body.style.transition = 'background-color 0.5s ease';
+    }
+}
+
 // function to update charts when date changes
 function updateChartsWithDate(selectedDate, apiData) {
     // Find the weather data for the selected date
@@ -79,6 +91,11 @@ function updateChartsWithDate(selectedDate, apiData) {
 
     // Find the publibike data for the selected date
     const publibikeData = findPublibikeDataByDate(selectedDate, apiData);
+    
+    // Update background color based on sunshine hours
+    if (weatherData && weatherData !== 'date not in data') {
+        updateBackgroundColor(weatherData.sunshine_duration);
+    }
     
     // Destroy old charts first
     charts.forEach(chart => chart.destroy());
@@ -112,6 +129,7 @@ function updateChartsWithDate(selectedDate, apiData) {
     if (sunshineChart) charts.push(sunshineChart);
     if (veloChart) charts.push(veloChart);
 }
+
 
 
 // Charts (Sunshine and Sunlight charts combined, structure from Chart.js)
@@ -253,6 +271,11 @@ async function initApp() {
         
         if (!data.publibike || !Array.isArray(data.publibike) || data.publibike.length === 0) {
             throw new Error('Invalid publibike data structure');
+        }
+
+        // Set initial background color based on first weather entry
+        if (data.weather && data.weather.length > 0) {
+            updateBackgroundColor(data.weather[0].sunshine_duration);
         }
 
         // Clear existing charts
