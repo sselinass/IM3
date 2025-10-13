@@ -4,6 +4,45 @@
     box-sizing: border-box;
 }
 
-body{
+/* body{
     background-color: #e3e34a8b;
+} */
+
+.chartContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    padding: 10px; /* Add some padding */
+}
+
+canvas {
+    max-width: 300px; /* Add a max-width */
+    max-height: 300px; /* Add a max-height */
+    width: 300px; /* Fixed width */
+    height: 300px; /* Fixed height */
+}
+
+.big-number {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 150px;
+    flex-shrink: 0; /* Prevent the number from shrinking */
+    padding: 10px; /* Add some padding */
+}
+
+.number-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+}
+
+.number-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    margin-top: 5px;
 }

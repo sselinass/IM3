@@ -75,12 +75,65 @@ function findPublibikeDataByDate(selectedDate, apiData) {
 // Add this new function after the existing functions
 function updateBackgroundColor(sunshineHours) {
     const body = document.body;
-    if (sunshineHours >= 6) {
-        body.style.backgroundColor = '#f1e19eff'; // Warm yellow (cornsilk)
+    console.log('Updating background color for sunshine hours:', sunshineHours);
+    
+    if (sunshineHours >= 8) {
+        body.style.setProperty('background-color', '#f1e19e', 'important');
         body.style.transition = 'background-color 0.5s ease';
+        console.log('Set background to warm yellow');
     } else {
-        body.style.backgroundColor = '#9fd1ffff'; // Light blue
+        body.style.setProperty('background-color', '#9fd1ff', 'important');
         body.style.transition = 'background-color 0.5s ease';
+        console.log('Set background to light blue');
+    }
+}
+
+// Add this new function after your existing functions
+function updateBigNumbers(weatherData, publibikeData) {
+    // Update sunlight duration
+    const sunlightElement = document.getElementById('sunlightNumber');
+    console.log('Sunlight element found:', sunlightElement);
+    
+    if (sunlightElement && weatherData && weatherData !== 'date not in data') {
+        const numberValue = sunlightElement.querySelector('.number-value');
+        console.log('Number value element found:', numberValue);
+        console.log('Weather daylight duration:', weatherData.daylight_duration);
+        
+        if (numberValue) {
+            numberValue.textContent = Math.round(weatherData.daylight_duration);
+            console.log('Updated sunlight to:', Math.round(weatherData.daylight_duration));
+        }
+    }
+    
+    // Update sunshine duration
+    const sunshineElement = document.getElementById('sunshineNumber');
+    console.log('Sunshine element found:', sunshineElement);
+    
+    if (sunshineElement && weatherData && weatherData !== 'date not in data') {
+        const numberValue = sunshineElement.querySelector('.number-value');
+        console.log('Sunshine number value element found:', numberValue);
+        
+        if (numberValue) {
+            numberValue.textContent = Math.round(weatherData.sunshine_duration);
+            console.log('Updated sunshine to:', Math.round(weatherData.sunshine_duration));
+        }
+    }
+    
+    // Update available bikes
+    const veloElement = document.getElementById('veloNumber');
+    console.log('Velo element found:', veloElement);
+    
+    if (veloElement) {
+        const numberValue = veloElement.querySelector('.number-value');
+        console.log('Velo number value element found:', numberValue);
+        
+        if (publibikeData && publibikeData.length > 0) {
+            numberValue.textContent = publibikeData[0].freebikes;
+            console.log('Updated velo to:', publibikeData[0].freebikes);
+        } else {
+            numberValue.textContent = '—'; // Show dash when no data
+            console.log('No velo data, showing dash');
+        }
     }
 }
 
@@ -96,6 +149,9 @@ function updateChartsWithDate(selectedDate, apiData) {
     if (weatherData && weatherData !== 'date not in data') {
         updateBackgroundColor(weatherData.sunshine_duration);
     }
+    
+    // Update big numbers
+    updateBigNumbers(weatherData, publibikeData);
     
     // Destroy old charts first
     charts.forEach(chart => chart.destroy());
@@ -282,10 +338,6 @@ async function initApp() {
         charts.forEach(chart => chart.destroy());
         charts = [];
 
-        // Create charts with first available data
-        const sunlightChart = createChart('SunlightChart', 'sunlight', data);
-        const sunshineChart = createChart('SunshineChart', 'sunshine', data);
-        
         // For initial load, always show average of all publibike data
         const allPublibikeData = data.publibike;
         const averageFreeBikes = allPublibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / allPublibikeData.length;
@@ -297,6 +349,12 @@ async function initApp() {
             }]
         };
         
+        // Update big numbers with initial data
+        updateBigNumbers(data.weather[0], averagedData.publibike);
+        
+        // Create charts with first available data (REMOVE DUPLICATE)
+        const sunlightChart = createChart('SunlightChart', 'sunlight', data);
+        const sunshineChart = createChart('SunshineChart', 'sunshine', data);
         const veloChart = createVeloChart('VeloChart', averagedData);
         
         // Store chart instances
