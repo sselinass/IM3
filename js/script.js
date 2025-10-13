@@ -58,12 +58,12 @@ function findPublibikeDataByDate(selectedDate, apiData) {
     
     // If we found data for this date, calculate average
     if (filteredData.length > 0) {
-        const averageEmptySlots = filteredData.reduce((sum, entry) => sum + entry.emptyslots, 0) / filteredData.length;
+        const averageFreeBikes = filteredData.reduce((sum, entry) => sum + entry.freebikes, 0) / filteredData.length;
         
         // Return a single entry with average values and the selected date
         return [{
             created_at: selectedDate + ' 12:00:00', // Use noon as representative time
-            emptyslots: Math.round(averageEmptySlots) // Round to nearest integer
+            freebikes: Math.round(averageFreeBikes) // Round to nearest integer
         }];
     }
     
@@ -193,14 +193,14 @@ function createVeloChart(canvasId, apiData) {
     }
     
     // Always show average data (single entry)
-    const labels = ['Durchschnitt'];
-    const bikesInUse = [publibikeData[0].emptyslots];
+    const labels = [''];
+    const availableBikes = [publibikeData[0].freebikes];
 
     const data = {
         labels: labels,
         datasets: [
             {
-                data: bikesInUse,
+                data: availableBikes,
                 borderColor: '#76acfdff',
                 backgroundColor: '#76acfdff',
             },
@@ -265,12 +265,12 @@ async function initApp() {
         
         // For initial load, always show average of all publibike data
         const allPublibikeData = data.publibike;
-        const averageEmptySlots = allPublibikeData.reduce((sum, entry) => sum + entry.emptyslots, 0) / allPublibikeData.length;
+        const averageFreeBikes = allPublibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / allPublibikeData.length;
         const averagedData = {
             weather: data.weather,
             publibike: [{
                 created_at: 'average',
-                emptyslots: Math.round(averageEmptySlots)
+                freebikes: Math.round(averageFreeBikes)
             }]
         };
         
