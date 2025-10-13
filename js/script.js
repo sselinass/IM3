@@ -268,7 +268,8 @@ function createVeloChart(canvasId, apiData) {
             },
             scales: {
                 x: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    max: 8572
                 }
             }
         },
