@@ -81,21 +81,31 @@ function updateBackgroundColor(sunshineHours) {
 function updateBigNumbers(weatherData, publibikeData) {
     // Update sunlight duration
     const sunlightElement = document.getElementById('sunlightNumber');
-    if (sunlightElement && weatherData && weatherData !== 'date not in data') {
+    if (sunlightElement) {
         const numberValue = sunlightElement.querySelector('.number-value');
         if (numberValue) {
-            numberValue.textContent = Math.round(weatherData.daylight_duration);
-            console.log('Updated sunlight to:', Math.round(weatherData.daylight_duration));
+            if (weatherData && weatherData !== 'date not in data') {
+                numberValue.textContent = Math.round(weatherData.daylight_duration);
+                console.log('Updated sunlight to:', Math.round(weatherData.daylight_duration));
+            } else {
+                numberValue.textContent = '—';
+                console.log('No sunlight data, showing dash');
+            }
         }
     }
     
     // Update sunshine duration
     const sunshineElement = document.getElementById('sunshineNumber');
-    if (sunshineElement && weatherData && weatherData !== 'date not in data') {
+    if (sunshineElement) {
         const numberValue = sunshineElement.querySelector('.number-value');
         if (numberValue) {
-            numberValue.textContent = Math.round(weatherData.sunshine_duration);
-            console.log('Updated sunshine to:', Math.round(weatherData.sunshine_duration));
+            if (weatherData && weatherData !== 'date not in data') {
+                numberValue.textContent = Math.round(weatherData.sunshine_duration);
+                console.log('Updated sunshine to:', Math.round(weatherData.sunshine_duration));
+            } else {
+                numberValue.textContent = '—';
+                console.log('No sunshine data, showing dash');
+            }
         }
     }
     
