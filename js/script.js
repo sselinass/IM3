@@ -67,9 +67,9 @@ function findPublibikeDataByDate(selectedDate, apiData) {
         }];
     }
     
-    // If no data found for this date, return all data
-    console.log('No publibike data found for selected date, showing all data');
-    return apiData.publibike;
+    // If no data found for this date, return null instead of all data
+    console.log('No publibike data found for selected date');
+    return null;
 }
 
 // function to update charts when date changes
@@ -87,12 +87,25 @@ function updateChartsWithDate(selectedDate, apiData) {
     // Create new charts with the selected date's data
     const modifiedData = {
         weather: [weatherData], // Put the selected weather data as the first item
-        publibike: publibikeData // Don't wrap in array - findPublibikeDataByDate already returns an array
+        publibike: publibikeData // This can now be null if no data exists
     };
+    
     
     const sunlightChart = createChart('SunlightChart', 'sunlight', modifiedData);
     const sunshineChart = createChart('SunshineChart', 'sunshine', modifiedData);
-    const veloChart = createVeloChart('VeloChart', modifiedData);
+    
+    // Only create velo chart if publibike data exists
+    let veloChart = null;
+    if (publibikeData) {
+        veloChart = createVeloChart('VeloChart', modifiedData);
+    } else {
+        // Hide or clear the canvas if no data
+        const canvas = document.getElementById('VeloChart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
     
     // Store the new charts
     if (sunlightChart) charts.push(sunlightChart);
@@ -174,34 +187,26 @@ function createVeloChart(canvasId, apiData) {
 
     const publibikeData = apiData.publibike;
     
-    // Check if we have averaged data (single entry) or multiple entries
-    let labels, bikesInUse;
-    
-    if (publibikeData.length === 1) {
-        // Single averaged entry
-        labels = ['Durchschnitt'];
-        bikesInUse = [publibikeData[0].emptyslots];
-    } else {
-        // Multiple entries (all data)
-        labels = publibikeData.map(entry => {
-            const date = new Date(entry.created_at);
-            return date.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
-        });
-        bikesInUse = publibikeData.map(entry => entry.emptyslots);
+    // Check if publibikeData exists
+    if (!publibikeData || publibikeData.length === 0) {
+        return null;
     }
+    
+    // Always show average data (single entry)
+    const labels = ['Durchschnitt'];
+    const bikesInUse = [publibikeData[0].emptyslots];
 
     const data = {
         labels: labels,
         datasets: [
             {
-                label: 'Velos in Gebrauch',
                 data: bikesInUse,
                 borderColor: '#76acfdff',
                 backgroundColor: '#76acfdff',
             },
         ]
     };
-
+    
     const config = {
         type: 'bar',
         data: data,
@@ -209,18 +214,14 @@ function createVeloChart(canvasId, apiData) {
             indexAxis: 'y',
             elements: {
                 bar: {
-                    borderWidth: 2,
+                    borderWidth: 0,
                 }
             },
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Publibike Zahlen'
+                    display: false // Hide legend
                 }
             },
             scales: {
@@ -261,7 +262,19 @@ async function initApp() {
         // Create charts with first available data
         const sunlightChart = createChart('SunlightChart', 'sunlight', data);
         const sunshineChart = createChart('SunshineChart', 'sunshine', data);
-        const veloChart = createVeloChart('VeloChart', data);
+        
+        // For initial load, always show average of all publibike data
+        const allPublibikeData = data.publibike;
+        const averageEmptySlots = allPublibikeData.reduce((sum, entry) => sum + entry.emptyslots, 0) / allPublibikeData.length;
+        const averagedData = {
+            weather: data.weather,
+            publibike: [{
+                created_at: 'average',
+                emptyslots: Math.round(averageEmptySlots)
+            }]
+        };
+        
+        const veloChart = createVeloChart('VeloChart', averagedData);
         
         // Store chart instances
         if (sunlightChart) charts.push(sunlightChart);
