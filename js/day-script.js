@@ -5,7 +5,7 @@ const COOL_BLUE = '#9fd1ff';
 const CHART_BLUE = '#76acfdff';
 const LIGHT_BLUE = '#c6dde8ff';
 const SUNSHINE_YELLOW = '#FFD700';
-const LIGHT_YELLOW = '#fdff80ff';
+const LIGHT_YELLOW = '#fdff80ff';   
 
 // Global variables
 let globalApiData = null;
