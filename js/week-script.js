@@ -1,19 +1,9 @@
-// Constants for colors and API
-const API_URL = 'https://im3.selina-schoepfer.ch/php/unload_week.php';
-const WARM_YELLOW = '#f1e19e';
-const COOL_BLUE = '#9fd1ff';
-const CHART_BLUE = '#76acfdff';
-const LIGHT_BLUE = '#c6dde8ff';
-const SUNSHINE_YELLOW = '#FFD700';
-const LIGHT_YELLOW = '#fdff80ff';
-
-// Global variables
-let charts = [];
+// Week-specific functions
 
 // Fetch week data from the API for a specific start date
 async function fetchWeekData(startDate) {
     try {
-        const url = `${API_URL}?date=${startDate}`;
+        const url = `${WEEK_API_URL}?date=${startDate}`;
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -33,7 +23,6 @@ async function fetchWeekData(startDate) {
 function processWeekData(apiData) {
     const dailyData = {};
     
-    // Process weather data
     if (apiData.weather) {
         apiData.weather.forEach(entry => {
             const date = entry.created_at.split(' ')[0];
@@ -44,7 +33,6 @@ function processWeekData(apiData) {
         });
     }
     
-    // Process publibike data (calculate daily average)
     if (apiData.publibike) {
         const publibikeByDate = {};
         
@@ -56,7 +44,6 @@ function processWeekData(apiData) {
             publibikeByDate[date].push(entry);
         });
         
-        // Calculate averages for each date
         Object.keys(publibikeByDate).forEach(date => {
             const entries = publibikeByDate[date];
             const averageFreeBikes = entries.reduce((sum, entry) => sum + entry.freebikes, 0) / entries.length;
@@ -68,10 +55,8 @@ function processWeekData(apiData) {
         });
     }
     
-    // Convert to array and sort by date
     const weekArray = Object.values(dailyData).sort((a, b) => a.date.localeCompare(b.date));
     
-    // Add day names
     weekArray.forEach(day => {
         const date = new Date(day.date);
         day.dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
@@ -81,15 +66,13 @@ function processWeekData(apiData) {
     return weekArray;
 }
 
-// Function to create weather chart with week data
+// Create weather chart with week data
 function createWeatherChart(weekData) {
     const canvas = document.getElementById('weatherChart');
     if (!canvas) {
         console.error('Weather chart canvas not found');
         return null;
     }
-    
-    const ctx = canvas.getContext('2d');
     
     const labels = weekData.map(day => day.dayName);
     
@@ -101,9 +84,7 @@ function createWeatherChart(weekData) {
         day.weather ? (day.weather.daylight_duration || 0) : 0
     );
     
-    console.log('Chart data - Sunshine:', sunshineData, 'Daylight:', daylightData);
-    
-    const chart = new Chart(ctx, {
+    const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: labels,
@@ -160,7 +141,7 @@ function createWeatherChart(weekData) {
     return chart;
 }
 
-// Function to create publibike chart with week data
+// Create publibike chart with week data
 function createPublibikeChart(weekData) {
     const canvas = document.getElementById('publibikeChart');
     if (!canvas) {
@@ -168,12 +149,10 @@ function createPublibikeChart(weekData) {
         return null;
     }
     
-    const ctx = canvas.getContext('2d');
-    
     const labels = weekData.map(day => day.dayName);
     const freeBikesData = weekData.map(day => day.publibike || 0);
     
-    const chart = new Chart(ctx, {
+    const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: labels,
@@ -220,15 +199,35 @@ function createPublibikeChart(weekData) {
     return chart;
 }
 
-// Function to update all charts with week data
+// Update date range display
+function updateDateRangeDisplay(startDate, endDate) {
+    // Create date range element if it doesn't exist
+    let dateRangeElement = document.getElementById('dateRange');
+    if (!dateRangeElement) {
+        dateRangeElement = document.createElement('div');
+        dateRangeElement.id = 'dateRange';
+        dateRangeElement.className = 'date-range';
+        
+        // Insert it after the date picker
+        const datePickerContainer = document.getElementById('datePickerContainer');
+        if (datePickerContainer) {
+            datePickerContainer.insertAdjacentElement('afterend', dateRangeElement);
+        }
+    }
+    
+    if (dateRangeElement) {
+        const start = new Date(startDate).toLocaleDateString('de-DE');
+        const end = new Date(endDate).toLocaleDateString('de-DE');
+        dateRangeElement.textContent = `${start} - ${end}`;
+    }
+}
+
+// Update all charts with week data
 async function updateWeekData(startDate) {
     try {
         console.log('Updating week data for start date:', startDate);
         
-        // Fetch week data from API
         const apiData = await fetchWeekData(startDate);
-        
-        // Process the data into daily aggregates
         const weekData = processWeekData(apiData);
         
         if (weekData.length === 0) {
@@ -237,17 +236,14 @@ async function updateWeekData(startDate) {
             return;
         }
         
-        // Destroy existing charts
         destroyAllCharts();
         
-        // Create new charts
         const weatherChart = createWeatherChart(weekData);
         const publibikeChart = createPublibikeChart(weekData);
         
         if (weatherChart) charts.push(weatherChart);
         if (publibikeChart) charts.push(publibikeChart);
         
-        // Update date range display
         updateDateRangeDisplay(apiData.start_date, apiData.end_date);
         
     } catch (error) {
@@ -256,59 +252,21 @@ async function updateWeekData(startDate) {
     }
 }
 
-// Helper function to destroy all charts
-function destroyAllCharts() {
-    charts.forEach(chart => chart.destroy());
-    charts = [];
-}
-
-// Function to update date range display
-function updateDateRangeDisplay(startDate, endDate) {
-    const dateRangeElement = document.getElementById('dateRange');
-    if (dateRangeElement) {
-        const start = new Date(startDate).toLocaleDateString('de-DE');
-        const end = new Date(endDate).toLocaleDateString('de-DE');
-        dateRangeElement.textContent = `${start} - ${end}`;
-    }
-}
-
-// Setup date picker functionality
-function setupDatePicker() {
-    const datePicker = document.getElementById('datePicker');
+// Show week view - simplified since we're on a dedicated page
+function showWeekView() {
+    console.log('Showing week view');
     
-    if (datePicker) {
-        // Set default to today (will fetch week starting from today)
-        const today = new Date().toISOString().split('T')[0];
-        datePicker.value = today;
-        
-        // Add event listener for date changes
-        datePicker.addEventListener('change', (event) => {
-            const selectedDate = event.target.value;
-            console.log('Week start date selected:', selectedDate);
-            updateWeekData(selectedDate);
-        });
-    }
+    // No need to hide/show elements since this is a dedicated page
+    document.body.style.setProperty('background-color', '#f5f5f5', 'important');
+    
+    const datePicker = document.getElementById('datePicker');
+    const startDate = datePicker ? datePicker.value : new Date().toISOString().split('T')[0];
+    updateWeekData(startDate);
 }
 
-// Initialize the application
-async function initializeApp() {
-    try {
-        console.log('Initializing week view application...');
-        
-        // Setup date picker
-        setupDatePicker();
-        
-        // Load initial week data (starting from today)
-        const today = new Date().toISOString().split('T')[0];
-        await updateWeekData(today);
-        
-        console.log('Week view application initialized successfully');
-        
-    } catch (error) {
-        console.error('Failed to initialize week view app:', error);
-        alert('Failed to load the application. Please refresh the page.');
-    }
-}
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeApp);
+// Initialize week view when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Week script loaded');
+    // Auto-load week view since this is the week page
+    setTimeout(showWeekView, 100); // Small delay to ensure main script is loaded
+});

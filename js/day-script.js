@@ -1,20 +1,9 @@
-// Constants for colors and API
-const API_URL = 'https://im3.selina-schoepfer.ch/php/unload_day.php';
-const WARM_YELLOW = '#f1e19e';
-const COOL_BLUE = '#9fd1ff';
-const CHART_BLUE = '#76acfdff';
-const LIGHT_BLUE = '#c6dde8ff';
-const SUNSHINE_YELLOW = '#FFD700';
-const LIGHT_YELLOW = '#fdff80ff';
-
-// Global variables
-let charts = [];
-let currentView = 'day';
+// Day-specific functions
 
 // Fetch data from the API for a specific date
 async function fetchDataForDate(date) {
     try {
-        const url = `${API_URL}?date=${date}`;
+        const url = `${DAY_API_URL}?date=${date}`;
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -28,19 +17,6 @@ async function fetchDataForDate(date) {
         console.error('Error fetching data:', error);
         throw error;
     }
-}
-
-// Update background color based on sunshine hours
-function updateBackgroundColor(sunshineHours) {
-    const body = document.body;
-    console.log('Updating background color for sunshine hours:', sunshineHours);
-    
-    const color = sunshineHours >= 7 ? WARM_YELLOW : COOL_BLUE;
-    const colorName = sunshineHours >= 7 ? 'warm yellow' : 'light blue';
-    
-    body.style.setProperty('background-color', color, 'important');
-    body.style.transition = 'background-color 0.5s ease';
-    console.log(`Set background to ${colorName}`);
 }
 
 // Update the big number displays
@@ -75,7 +51,7 @@ function updateBigNumbers(weatherData, publibikeData) {
         }
     }
     
-    // Update available bikes (calculate average if multiple entries)
+    // Update available bikes
     const veloElement = document.getElementById('veloNumber');
     if (veloElement) {
         const numberValue = veloElement.querySelector('.number-value');
@@ -90,72 +66,8 @@ function updateBigNumbers(weatherData, publibikeData) {
     }
 }
 
-// Function to update all data for a selected date
-async function updateDataForDate(selectedDate) {
-    try {
-        console.log('Updating data for date:', selectedDate);
-        
-        // Fetch new data from API
-        const data = await fetchDataForDate(selectedDate);
-        
-        // Update background color based on sunshine hours
-        if (data.weather && data.weather.length > 0) {
-            updateBackgroundColor(data.weather[0].sunshine_duration);
-        } else {
-            // Default to cool blue if no weather data
-            document.body.style.setProperty('background-color', COOL_BLUE, 'important');
-        }
-        
-        // Update big numbers
-        updateBigNumbers(data.weather, data.publibike);
-        
-        // Destroy old charts and create new ones
-        destroyAllCharts();
-        createAndStoreCharts(data);
-        
-    } catch (error) {
-        console.error('Error updating data for date:', error);
-        // Show user-friendly error
-        alert('Error loading data for selected date. Please try again.');
-    }
-}
-
-// Helper function to destroy all charts
-function destroyAllCharts() {
-    charts.forEach(chart => chart.destroy());
-    charts = [];
-}
-
-// Helper function to create and store all charts
-function createAndStoreCharts(data) {
-    if (data.weather && data.weather.length > 0) {
-        const sunlightChart = createChart('SunlightChart', 'sunlight', data);
-        const sunshineChart = createChart('SunshineChart', 'sunshine', data);
-        
-        if (sunlightChart) charts.push(sunlightChart);
-        if (sunshineChart) charts.push(sunshineChart);
-    }
-    
-    // Create velo chart if publibike data exists
-    if (data.publibike && data.publibike.length > 0) {
-        const veloChart = createVeloChart('VeloChart', data);
-        if (veloChart) charts.push(veloChart);
-    } else {
-        clearVeloCanvas();
-    }
-}
-
-// Helper function to clear velo canvas
-function clearVeloCanvas() {
-    const canvas = document.getElementById('VeloChart');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-}
-
-// Charts creation function
-function createChart(canvasId, chartType, apiData) {
+// Create day charts (doughnut charts)
+function createDayChart(canvasId, chartType, apiData) {
     const canvas = document.getElementById(canvasId);
     
     if (!canvas) {
@@ -213,7 +125,7 @@ function createChart(canvasId, chartType, apiData) {
     return new Chart(canvas, config);
 }
 
-// Velo Chart (horizontal bar chart)
+// Create velo chart (horizontal bar chart)
 function createVeloChart(canvasId, apiData) {
     const canvas = document.getElementById(canvasId);
     
@@ -228,7 +140,6 @@ function createVeloChart(canvasId, apiData) {
         return null;
     }
     
-    // Calculate average if multiple entries
     const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
     
     const data = {
@@ -269,56 +180,43 @@ function createVeloChart(canvasId, apiData) {
     return new Chart(canvas, config);
 }
 
-// Setup date picker
-function setupDatePicker() {
-    const datePicker = document.getElementById('datePicker');
-    
-    if (datePicker) {
-        // Set default to today
-        const today = new Date().toISOString().split('T')[0];
-        datePicker.value = today;
+// Update all data for a selected date
+async function updateDataForDate(selectedDate) {
+    try {
+        console.log('Updating data for date:', selectedDate);
         
-        // Add event listener for date changes
-        datePicker.addEventListener('change', (event) => {
-            const selectedDate = event.target.value;
-            console.log('Date selected:', selectedDate);
-            updateDataForDate(selectedDate);
-        });
-    }
-}
-
-// Function to toggle between day and week view
-function setView(viewType) {
-    currentView = viewType;
-    console.log('View changed to:', viewType);
-    
-    updateViewButtons(viewType);
-    
-    if (viewType === 'day') {
-        showDayView();
-    } else if (viewType === 'week') {
-        showWeekView();
-    }
-}
-
-// Function to update button appearance
-function updateViewButtons(activeView) {
-    const dayButton = document.getElementById('dayViewBtn');
-    const weekButton = document.getElementById('weekViewBtn');
-    
-    if (dayButton && weekButton) {
-        dayButton.classList.remove('active');
-        weekButton.classList.remove('active');
+        const data = await fetchDataForDate(selectedDate);
         
-        if (activeView === 'day') {
-            dayButton.classList.add('active');
+        if (data.weather && data.weather.length > 0) {
+            updateBackgroundColor(data.weather[0].sunshine_duration);
         } else {
-            weekButton.classList.add('active');
+            document.body.style.setProperty('background-color', COOL_BLUE, 'important');
         }
+        
+        updateBigNumbers(data.weather, data.publibike);
+        
+        destroyAllCharts();
+        
+        if (data.weather && data.weather.length > 0) {
+            const sunlightChart = createDayChart('SunlightChart', 'sunlight', data);
+            const sunshineChart = createDayChart('SunshineChart', 'sunshine', data);
+            
+            if (sunlightChart) charts.push(sunlightChart);
+            if (sunshineChart) charts.push(sunshineChart);
+        }
+        
+        if (data.publibike && data.publibike.length > 0) {
+            const veloChart = createVeloChart('VeloChart', data);
+            if (veloChart) charts.push(veloChart);
+        }
+        
+    } catch (error) {
+        console.error('Error updating data for date:', error);
+        alert('Error loading data for selected date. Please try again.');
     }
 }
 
-// Function to show day view
+// Show day view
 function showDayView() {
     console.log('Showing day view');
     
@@ -333,89 +231,12 @@ function showDayView() {
     const weekContainer = document.getElementById('weekContainer');
     if (weekContainer) weekContainer.style.display = 'none';
     
-    // Load data for current selected date
     if (datePicker && datePicker.value) {
         updateDataForDate(datePicker.value);
     }
 }
 
-// Function to show week view
-function showWeekView() {
-    console.log('Showing week view');
-    
-    const datePicker = document.getElementById('datePicker');
-    const chartsContainer = document.querySelector('.charts-container');
-    const bigNumbers = document.querySelector('.big-numbers');
-    
-    if (datePicker) datePicker.style.display = 'none';
-    if (chartsContainer) chartsContainer.style.display = 'none';
-    if (bigNumbers) bigNumbers.style.display = 'none';
-    
-    let weekContainer = document.getElementById('weekContainer');
-    if (!weekContainer) {
-        weekContainer = createWeekContainer();
-    }
-    weekContainer.style.display = 'block';
-    
-    destroyAllCharts();
-    document.body.style.setProperty('background-color', '#f5f5f5', 'important');
-}
-
-// Function to create week view container
-function createWeekContainer() {
-    const weekContainer = document.createElement('div');
-    weekContainer.id = 'weekContainer';
-    weekContainer.className = 'week-container';
-    weekContainer.innerHTML = `
-        <div class="week-content">
-            <h2>Week View</h2>
-            <p>Week view coming soon...</p>
-            <p>This will show combined data for the selected week.</p>
-        </div>
-    `;
-    
-    const mainContent = document.querySelector('.main-content') || document.body;
-    mainContent.appendChild(weekContainer);
-    
-    return weekContainer;
-}
-
-// Function to setup view buttons
-function setupViewButtons() {
-    const dayButton = document.getElementById('dayViewBtn');
-    const weekButton = document.getElementById('weekViewBtn');
-    
-    if (dayButton) {
-        dayButton.addEventListener('click', () => setView('day'));
-    }
-    
-    if (weekButton) {
-        weekButton.addEventListener('click', () => setView('week'));
-    }
-    
-    updateViewButtons('day');
-}
-
-// Initialize the application
-async function initApp() {
-    try {
-        console.log('Initializing app...');
-        
-        // Setup date picker and view buttons
-        setupDatePicker();
-        setupViewButtons();
-        
-        // Start in day view with today's data
-        setView('day');
-        
-        console.log('App initialized successfully');
-        
-    } catch (error) {
-        console.error('Failed to initialize app:', error);
-    }
-}
-
-// Initialize when DOM is loaded
+// Initialize day view when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
+    console.log('Day script loaded');
 });
