@@ -256,6 +256,9 @@ async function updateWeekData(startDate) {
 function showWeekView() {
     console.log('Showing week view');
     
+    // Set the current view to week
+    currentView = 'week';
+    
     // No need to hide/show elements since this is a dedicated page
     document.body.style.setProperty('background-color', '#f5f5f5', 'important');
     
@@ -267,6 +270,10 @@ function showWeekView() {
 // Initialize week view when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Week script loaded');
-    // Auto-load week view since this is the week page
-    setTimeout(showWeekView, 100); // Small delay to ensure main script is loaded
+    
+    // Override the main script's default behavior
+    setTimeout(() => {
+        currentView = 'week';
+        showWeekView();
+    }, 150); // Slightly longer delay to ensure main script is fully loaded
 });
