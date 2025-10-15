@@ -83,9 +83,26 @@ function setupDatePicker() {
         const today = new Date().toISOString().split('T')[0];
         datePicker.value = today;
         
+        // Set date constraints: from 2025-10-08 to today
+        datePicker.min = '2025-10-08';
+        datePicker.max = today;
+        
         datePicker.addEventListener('change', (event) => {
             const selectedDate = event.target.value;
             console.log('Date selected:', selectedDate);
+            
+            // Validate date is within allowed range
+            if (selectedDate < '2025-10-08') {
+                alert('No data available before October 8, 2025. Please select a valid date.');
+                datePicker.value = '2025-10-08';
+                return;
+            }
+            
+            if (selectedDate > today) {
+                alert('No data available for future dates. Please select a valid date.');
+                datePicker.value = today;
+                return;
+            }
             
             if (currentView === 'day' && typeof updateDataForDate === 'function') {
                 updateDataForDate(selectedDate);
