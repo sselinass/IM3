@@ -298,7 +298,50 @@ function calculateAveragePublibikeData(publibikeData) {
     }];
 }
 
-// Initialize the application
+// Function to get available dates from API data
+function getAvailableDates(apiData) {
+    const weatherDates = apiData.weather.map(entry => entry.created_at.split(' ')[0]);
+    const publibikeDates = apiData.publibike.map(entry => entry.created_at.split(' ')[0]);
+    
+    // Combine and get unique dates
+    const allDates = [...new Set([...weatherDates, ...publibikeDates])];
+    return allDates.sort();
+}
+
+// Enhanced date picker setup
+function setupDatePicker() {
+    const datePicker = document.getElementById('datePicker');
+    
+    if (datePicker && globalApiData) {
+        const availableDates = getAvailableDates(globalApiData);
+        
+        if (availableDates.length > 0) {
+            // Set min and max dates
+            datePicker.min = availableDates[0];
+            datePicker.max = availableDates[availableDates.length - 1];
+            
+            // Set default to first available date
+            datePicker.value = availableDates[0];
+        }
+        
+        datePicker.addEventListener('change', (event) => {
+            const selectedDate = event.target.value;
+            console.log('Date selected:', selectedDate);
+            
+            // Check if selected date has data
+            const availableDates = getAvailableDates(globalApiData);
+            if (availableDates.includes(selectedDate)) {
+                updateChartsWithDate(selectedDate, globalApiData);
+            } else {
+                alert('No data available for this date. Please select another date.');
+                // Reset to first available date
+                datePicker.value = availableDates[0];
+            }
+        });
+    }
+}
+
+// Update initApp to setup date picker after data is loaded
 async function initApp() {
     try {
         const data = await fetchData();
@@ -336,6 +379,9 @@ async function initApp() {
             publibike: averagedData.publibike
         });
         
+        // Setup date picker after data is loaded
+        setupDatePicker();
+        
         console.log('App initialized successfully');
         
     } catch (error) {
@@ -343,24 +389,7 @@ async function initApp() {
     }
 }
 
-// Date picker event listener
-function setupDatePicker() {
-    const datePicker = document.getElementById('datePicker');
-    
-    if (datePicker) {
-        datePicker.addEventListener('change', (event) => {
-            const selectedDate = event.target.value;
-            console.log('Date selected:', selectedDate);
-            
-            if (globalApiData) {
-                updateChartsWithDate(selectedDate, globalApiData);
-            }
-        });
-    }
-}
-
 // Call the init function when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    setupDatePicker();
-    initApp();
+    initApp(); // setupDatePicker is now called inside initApp
 });
