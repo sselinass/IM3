@@ -6,21 +6,22 @@
     <link rel="stylesheet" href="css/styles.css">
     <title>ride&shine - Week View</title>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="view-navigation">
-        <a href="index.html" class="nav-link">Day View</a>
-        <a href="week-view.html" class="nav-link active">Week View</a>
-    </nav>
-
+<body> 
     <div>
         <h1>RIDE & SHINE BERN</h1>
-        <h2>Wochenansicht - Coming Soon</h2>
+        <h2>Der Vergleich von Sonnenstunden und Fahrverhalten in Bern</h2>
+    </div>
+    
+    <div class="view-navigation">
+        <a href="index.html" class="nav-link">Day View</a>
+        <a href="week-view.html" class="nav-link active">Week View</a>
     </div>
 
-    <div class="week-content">
-        <p>Die Wochenansicht wird bald verfügbar sein...</p>
-        <p>Hier werden kombinierte Daten für die ausgewählte Woche angezeigt.</p>
+    <div id="datePickerContainer">
+        <p>
+            <p>wähle ein Datum:</p>
+            <input type="date" id="datePicker" />
+        </p>
     </div>
     
     <script src="js/week-script.js"></script>
