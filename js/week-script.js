@@ -1,5 +1,5 @@
 // Constants for colors and API
-const API_URL = 'https://im3.selina-schoepfer.ch/php/unload.php';
+const API_URL = 'https://im3.selina-schoepfer.ch/php/unload_week.php';
 const WARM_YELLOW = '#f1e19e';
 const COOL_BLUE = '#9fd1ff';
 const CHART_BLUE = '#76acfdff';
@@ -8,211 +8,140 @@ const SUNSHINE_YELLOW = '#FFD700';
 const LIGHT_YELLOW = '#fdff80ff';
 
 // Global variables
-let globalApiData = null;
 let charts = [];
 
-// Fetch data from the API
-async function fetchData() {
+// Fetch week data from the API for a specific start date
+async function fetchWeekData(startDate) {
     try {
-        const response = await fetch(API_URL);
+        const url = `${API_URL}?date=${startDate}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Data fetched:', data);
+        console.log('Week data fetched for start date:', startDate, data);
         return data;
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching week data:', error);
         throw error;
     }
 }
 
-// Function to find weather data for a specific date
-function findWeatherDataByDate(selectedDate, apiData) {
-    for (let i = 0; i < apiData.weather.length; i++) {
-        const weatherEntry = apiData.weather[i];
-        const entryDate = weatherEntry.created_at.split(' ')[0];
-        
-        if (entryDate === selectedDate) {
-            // Debug: Log the actual weather data structure
-            console.log('Found weather data for', selectedDate, ':', weatherEntry);
-            console.log('Available properties:', Object.keys(weatherEntry));
-            return weatherEntry;
-        }
-    }
+// Process API data into daily aggregates
+function processWeekData(apiData) {
+    const dailyData = {};
     
-    console.log('Date not found in weather data');
-    return 'date not in data';
-}
-
-// Function to find publibike data for a specific date and calculate average
-function findPublibikeDataByDate(selectedDate, apiData) {
-    const filteredData = apiData.publibike.filter(entry => {
-        const entryDate = entry.created_at.split(' ')[0];
-        return entryDate === selectedDate;
-    });
-    
-    if (filteredData.length > 0) {
-        const averageFreeBikes = filteredData.reduce((sum, entry) => sum + entry.freebikes, 0) / filteredData.length;
-        
-        return [{
-            created_at: selectedDate + ' 12:00:00',
-            freebikes: Math.round(averageFreeBikes)
-        }];
-    }
-    
-    console.log('No publibike data found for selected date');
-    return null;
-}
-
-// Get available dates from API data
-function getAvailableDates(apiData) {
-    const dates = new Set();
-    
-    // Get dates from weather data
-    apiData.weather.forEach(entry => {
-        const date = entry.created_at.split(' ')[0];
-        dates.add(date);
-    });
-    
-    // Get dates from publibike data
-    apiData.publibike.forEach(entry => {
-        const date = entry.created_at.split(' ')[0];
-        dates.add(date);
-    });
-    
-    return Array.from(dates).sort();
-}
-
-// Function to get week data starting from selected date
-function getWeekData(selectedDate, apiData) {
-    const startDate = new Date(selectedDate);
-    const weekData = [];
-    
-    // Debug: Log available dates
-    const availableDates = getAvailableDates(apiData);
-    console.log('Available dates in data:', availableDates);
-    console.log('Trying to get week starting from:', selectedDate);
-    
-    for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        const dateString = currentDate.toISOString().split('T')[0];
-        
-        console.log('Looking for date:', dateString);
-        
-        const weatherData = findWeatherDataByDate(dateString, apiData);
-        const publibikeData = findPublibikeDataByDate(dateString, apiData);
-        
-        weekData.push({
-            date: dateString,
-            dayName: currentDate.toLocaleDateString('de-DE', { weekday: 'short' }),
-            weather: weatherData !== 'date not in data' ? weatherData : null,
-            publibike: publibikeData
+    // Process weather data
+    if (apiData.weather) {
+        apiData.weather.forEach(entry => {
+            const date = entry.created_at.split(' ')[0];
+            if (!dailyData[date]) {
+                dailyData[date] = { date };
+            }
+            dailyData[date].weather = entry;
         });
     }
     
-    console.log('Week data:', weekData);
-    return weekData;
-}
-
-// Alternative approach: Show only available dates within a week range
-function getAvailableWeekData(selectedDate, apiData) {
-    const startDate = new Date(selectedDate);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6); // 7 days total
-    
-    const startDateString = startDate.toISOString().split('T')[0];
-    const endDateString = endDate.toISOString().split('T')[0];
-    
-    console.log('Looking for data between:', startDateString, 'and', endDateString);
-    
-    const availableDates = getAvailableDates(apiData);
-    const weekDates = availableDates.filter(date => date >= startDateString && date <= endDateString);
-    
-    console.log('Available dates in week range:', weekDates);
-    
-    const weekData = weekDates.map(dateString => {
-        const date = new Date(dateString);
-        const weatherData = findWeatherDataByDate(dateString, apiData);
-        const publibikeData = findPublibikeDataByDate(dateString, apiData);
+    // Process publibike data (calculate daily average)
+    if (apiData.publibike) {
+        const publibikeByDate = {};
         
-        return {
-            date: dateString,
-            dayName: date.toLocaleDateString('de-DE', { weekday: 'short' }),
-            weather: weatherData !== 'date not in data' ? weatherData : null,
-            publibike: publibikeData
-        };
+        apiData.publibike.forEach(entry => {
+            const date = entry.created_at.split(' ')[0];
+            if (!publibikeByDate[date]) {
+                publibikeByDate[date] = [];
+            }
+            publibikeByDate[date].push(entry);
+        });
+        
+        // Calculate averages for each date
+        Object.keys(publibikeByDate).forEach(date => {
+            const entries = publibikeByDate[date];
+            const averageFreeBikes = entries.reduce((sum, entry) => sum + entry.freebikes, 0) / entries.length;
+            
+            if (!dailyData[date]) {
+                dailyData[date] = { date };
+            }
+            dailyData[date].publibike = Math.round(averageFreeBikes);
+        });
+    }
+    
+    // Convert to array and sort by date
+    const weekArray = Object.values(dailyData).sort((a, b) => a.date.localeCompare(b.date));
+    
+    // Add day names
+    weekArray.forEach(day => {
+        const date = new Date(day.date);
+        day.dayName = date.toLocaleDateString('de-DE', { weekday: 'short' });
     });
     
-    return weekData;
+    console.log('Processed week data:', weekArray);
+    return weekArray;
 }
 
 // Function to create weather chart with week data
 function createWeatherChart(weekData) {
-    const ctx = document.getElementById('weatherChart').getContext('2d');
+    const canvas = document.getElementById('weatherChart');
+    if (!canvas) {
+        console.error('Weather chart canvas not found');
+        return null;
+    }
     
-    // Debug: Log the weather data to see what properties are available
-    console.log('Weather data for chart:', weekData.map(day => day.weather));
+    const ctx = canvas.getContext('2d');
     
     const labels = weekData.map(day => day.dayName);
     
-    // Try different possible property names for sunshine and daylight hours
-    const sunshineData = weekData.map(day => {
-        if (!day.weather) return 0;
-        
-        // Try different possible property names
-        return day.weather.sunshine_hours || 
-               day.weather.sunshine_duration || 
-               day.weather.sun_hours || 
-               day.weather.sunshine || 
-               0;
-    });
+    const sunshineData = weekData.map(day => 
+        day.weather ? (day.weather.sunshine_duration || 0) : 0
+    );
     
-    const daylightData = weekData.map(day => {
-        if (!day.weather) return 0;
-        
-        // Try different possible property names
-        return day.weather.daylight_hours || 
-               day.weather.daylight_duration || 
-               day.weather.daylight || 
-               day.weather.day_hours ||
-               0;
-    });
+    const daylightData = weekData.map(day => 
+        day.weather ? (day.weather.daylight_duration || 0) : 0
+    );
     
-    console.log('Sunshine data:', sunshineData);
-    console.log('Daylight data:', daylightData);
+    console.log('Chart data - Sunshine:', sunshineData, 'Daylight:', daylightData);
     
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'sonnenstunden',
+                label: 'Sonnenstunden',
                 data: sunshineData,
                 borderColor: SUNSHINE_YELLOW,
                 backgroundColor: LIGHT_YELLOW,
-                borderWidth: 2,
+                borderWidth: 3,
                 fill: false,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 6,
+                pointHoverRadius: 8
             }, {
-                label: 'tageslichtzeit',
+                label: 'Tageslichtzeit',
                 data: daylightData,
                 borderColor: WARM_YELLOW,
                 backgroundColor: WARM_YELLOW + '40',
-                borderWidth: 2,
+                borderWidth: 3,
                 fill: false,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
-                    text: 'sonnenstunden und tageslichtzeit - wochenansicht'
+                    text: 'Sonnenstunden und Tageslichtzeit - Wochenansicht',
+                    font: {
+                        size: 16
+                    }
+                },
+                legend: {
+                    position: 'top'
                 }
             },
             scales: {
@@ -221,7 +150,7 @@ function createWeatherChart(weekData) {
                     max: 24,
                     title: {
                         display: true,
-                        text: 'stunden'
+                        text: 'Stunden'
                     }
                 }
             }
@@ -233,41 +162,55 @@ function createWeatherChart(weekData) {
 
 // Function to create publibike chart with week data
 function createPublibikeChart(weekData) {
-    const ctx = document.getElementById('publibikeChart').getContext('2d');
+    const canvas = document.getElementById('publibikeChart');
+    if (!canvas) {
+        console.error('Publibike chart canvas not found');
+        return null;
+    }
+    
+    const ctx = canvas.getContext('2d');
     
     const labels = weekData.map(day => day.dayName);
-    const freeBikesData = weekData.map(day => 
-        day.publibike && day.publibike.length > 0 ? day.publibike[0].freebikes : 0
-    );
+    const freeBikesData = weekData.map(day => day.publibike || 0);
     
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'verfügbare publibikes',
+                label: 'Verfügbare PubliBikes',
                 data: freeBikesData,
                 borderColor: CHART_BLUE,
                 backgroundColor: LIGHT_BLUE,
-                borderWidth: 2,
+                borderWidth: 3,
                 fill: false,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
-                    text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)'
+                    text: 'Verfügbare PubliBikes - Wochenansicht (von 8572 gesamt)',
+                    font: {
+                        size: 16
+                    }
+                },
+                legend: {
+                    position: 'top'
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
+                    max: 8572,
                     title: {
                         display: true,
-                        text: 'anzahl publibikes'
+                        text: 'Anzahl PubliBikes'
                     }
                 }
             }
@@ -277,89 +220,93 @@ function createPublibikeChart(weekData) {
     return chart;
 }
 
-// Update charts with selected date data (now shows available data in week range)
-function updateChartsWithDate(selectedDate, apiData) {
-    console.log('Updating charts for week starting:', selectedDate);
-    
-    // Get available week data instead of forcing 7 days
-    const weekData = getAvailableWeekData(selectedDate, apiData);
-    
-    if (weekData.length === 0) {
-        console.log('No data available for the selected week range');
-        return;
+// Function to update all charts with week data
+async function updateWeekData(startDate) {
+    try {
+        console.log('Updating week data for start date:', startDate);
+        
+        // Fetch week data from API
+        const apiData = await fetchWeekData(startDate);
+        
+        // Process the data into daily aggregates
+        const weekData = processWeekData(apiData);
+        
+        if (weekData.length === 0) {
+            console.log('No data available for the selected week');
+            alert('No data available for the selected week. Please choose a different date.');
+            return;
+        }
+        
+        // Destroy existing charts
+        destroyAllCharts();
+        
+        // Create new charts
+        const weatherChart = createWeatherChart(weekData);
+        const publibikeChart = createPublibikeChart(weekData);
+        
+        if (weatherChart) charts.push(weatherChart);
+        if (publibikeChart) charts.push(publibikeChart);
+        
+        // Update date range display
+        updateDateRangeDisplay(apiData.start_date, apiData.end_date);
+        
+    } catch (error) {
+        console.error('Error updating week data:', error);
+        alert('Error loading week data. Please try again.');
     }
-    
-    // Destroy existing charts
+}
+
+// Helper function to destroy all charts
+function destroyAllCharts() {
     charts.forEach(chart => chart.destroy());
     charts = [];
-    
-    // Create weather chart
-    const weatherChart = createWeatherChart(weekData);
-    charts.push(weatherChart);
-    
-    // Create publibike chart
-    const publibikeChart = createPublibikeChart(weekData);
-    charts.push(publibikeChart);
+}
+
+// Function to update date range display
+function updateDateRangeDisplay(startDate, endDate) {
+    const dateRangeElement = document.getElementById('dateRange');
+    if (dateRangeElement) {
+        const start = new Date(startDate).toLocaleDateString('de-DE');
+        const end = new Date(endDate).toLocaleDateString('de-DE');
+        dateRangeElement.textContent = `${start} - ${end}`;
+    }
 }
 
 // Setup date picker functionality
 function setupDatePicker() {
     const datePicker = document.getElementById('datePicker');
     
-    if (datePicker && globalApiData) {
-        const availableDates = getAvailableDates(globalApiData);
+    if (datePicker) {
+        // Set default to today (will fetch week starting from today)
+        const today = new Date().toISOString().split('T')[0];
+        datePicker.value = today;
         
-        if (availableDates.length > 0) {
-            // Set min and max dates
-            datePicker.min = availableDates[0];
-            datePicker.max = availableDates[availableDates.length - 1];
-            
-            // Set default to first available date
-            datePicker.value = availableDates[0];
-        }
-        
+        // Add event listener for date changes
         datePicker.addEventListener('change', (event) => {
             const selectedDate = event.target.value;
-            console.log('Date selected:', selectedDate);
-            
-            // Check if selected date has data
-            const availableDates = getAvailableDates(globalApiData);
-            if (availableDates.includes(selectedDate)) {
-                updateChartsWithDate(selectedDate, globalApiData);
-            } else {
-                alert('No data available for this date. Please select another date.');
-                // Reset to first available date
-                datePicker.value = availableDates[0];
-            }
+            console.log('Week start date selected:', selectedDate);
+            updateWeekData(selectedDate);
         });
     }
 }
 
-// Main initialization function
+// Initialize the application
 async function initializeApp() {
     try {
-        console.log('Initializing application...');
+        console.log('Initializing week view application...');
         
-        // Fetch data first
-        globalApiData = await fetchData();
-        
-        if (!globalApiData) {
-            throw new Error('No data received from API');
-        }
-        
-        // Setup date picker after data is loaded
+        // Setup date picker
         setupDatePicker();
         
-        // Initialize charts with first available date
-        const availableDates = getAvailableDates(globalApiData);
-        if (availableDates.length > 0) {
-            updateChartsWithDate(availableDates[0], globalApiData);
-        }
+        // Load initial week data (starting from today)
+        const today = new Date().toISOString().split('T')[0];
+        await updateWeekData(today);
         
-        console.log('Application initialized successfully');
+        console.log('Week view application initialized successfully');
         
     } catch (error) {
-        console.error('Failed to initialize app:', error);
+        console.error('Failed to initialize week view app:', error);
+        alert('Failed to load the application. Please refresh the page.');
     }
 }
 

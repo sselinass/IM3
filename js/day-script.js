@@ -1,67 +1,33 @@
 // Constants for colors and API
-const API_URL = 'https://im3.selina-schoepfer.ch/php/unload.php';
+const API_URL = 'https://im3.selina-schoepfer.ch/php/unload_day.php';
 const WARM_YELLOW = '#f1e19e';
 const COOL_BLUE = '#9fd1ff';
 const CHART_BLUE = '#76acfdff';
 const LIGHT_BLUE = '#c6dde8ff';
 const SUNSHINE_YELLOW = '#FFD700';
-const LIGHT_YELLOW = '#fdff80ff';   
+const LIGHT_YELLOW = '#fdff80ff';
 
 // Global variables
-let globalApiData = null;
 let charts = [];
+let currentView = 'day';
 
-// Fetch data from the API
-async function fetchData() {
+// Fetch data from the API for a specific date
+async function fetchDataForDate(date) {
     try {
-        const response = await fetch(API_URL);
+        const url = `${API_URL}?date=${date}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Data fetched:', data);
+        console.log('Data fetched for date:', date, data);
         return data;
     } catch (error) {
         console.error('Error fetching data:', error);
         throw error;
     }
-}
-
-// Function to find weather data for a specific date
-function findWeatherDataByDate(selectedDate, apiData) {
-    for (let i = 0; i < apiData.weather.length; i++) {
-        const weatherEntry = apiData.weather[i];
-        const entryDate = weatherEntry.created_at.split(' ')[0];
-        
-        if (entryDate === selectedDate) {
-            return weatherEntry;
-        }
-    }
-    
-    console.log('Date not found in weather data');
-    return 'date not in data';
-}
-
-// Function to find publibike data for a specific date and calculate average
-function findPublibikeDataByDate(selectedDate, apiData) {
-    const filteredData = apiData.publibike.filter(entry => {
-        const entryDate = entry.created_at.split(' ')[0];
-        return entryDate === selectedDate;
-    });
-    
-    if (filteredData.length > 0) {
-        const averageFreeBikes = filteredData.reduce((sum, entry) => sum + entry.freebikes, 0) / filteredData.length;
-        
-        return [{
-            created_at: selectedDate + ' 12:00:00',
-            freebikes: Math.round(averageFreeBikes)
-        }];
-    }
-    
-    console.log('No publibike data found for selected date');
-    return null;
 }
 
 // Update background color based on sunshine hours
@@ -84,9 +50,9 @@ function updateBigNumbers(weatherData, publibikeData) {
     if (sunlightElement) {
         const numberValue = sunlightElement.querySelector('.number-value');
         if (numberValue) {
-            if (weatherData && weatherData !== 'date not in data') {
-                numberValue.textContent = Math.round(weatherData.daylight_duration);
-                console.log('Updated sunlight to:', Math.round(weatherData.daylight_duration));
+            if (weatherData && weatherData.length > 0) {
+                numberValue.textContent = Math.round(weatherData[0].daylight_duration);
+                console.log('Updated sunlight to:', Math.round(weatherData[0].daylight_duration));
             } else {
                 numberValue.textContent = '—';
                 console.log('No sunlight data, showing dash');
@@ -99,9 +65,9 @@ function updateBigNumbers(weatherData, publibikeData) {
     if (sunshineElement) {
         const numberValue = sunshineElement.querySelector('.number-value');
         if (numberValue) {
-            if (weatherData && weatherData !== 'date not in data') {
-                numberValue.textContent = Math.round(weatherData.sunshine_duration);
-                console.log('Updated sunshine to:', Math.round(weatherData.sunshine_duration));
+            if (weatherData && weatherData.length > 0) {
+                numberValue.textContent = Math.round(weatherData[0].sunshine_duration);
+                console.log('Updated sunshine to:', Math.round(weatherData[0].sunshine_duration));
             } else {
                 numberValue.textContent = '—';
                 console.log('No sunshine data, showing dash');
@@ -109,13 +75,14 @@ function updateBigNumbers(weatherData, publibikeData) {
         }
     }
     
-    // Update available bikes
+    // Update available bikes (calculate average if multiple entries)
     const veloElement = document.getElementById('veloNumber');
     if (veloElement) {
         const numberValue = veloElement.querySelector('.number-value');
         if (publibikeData && publibikeData.length > 0) {
-            numberValue.textContent = publibikeData[0].freebikes;
-            console.log('Updated velo to:', publibikeData[0].freebikes);
+            const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
+            numberValue.textContent = Math.round(averageFreeBikes);
+            console.log('Updated velo to:', Math.round(averageFreeBikes));
         } else {
             numberValue.textContent = '—';
             console.log('No velo data, showing dash');
@@ -123,29 +90,34 @@ function updateBigNumbers(weatherData, publibikeData) {
     }
 }
 
-// Function to update charts when date changes
-function updateChartsWithDate(selectedDate, apiData) {
-    const weatherData = findWeatherDataByDate(selectedDate, apiData);
-    const publibikeData = findPublibikeDataByDate(selectedDate, apiData);
-    
-    // Update background color based on sunshine hours
-    if (weatherData && weatherData !== 'date not in data') {
-        updateBackgroundColor(weatherData.sunshine_duration);
+// Function to update all data for a selected date
+async function updateDataForDate(selectedDate) {
+    try {
+        console.log('Updating data for date:', selectedDate);
+        
+        // Fetch new data from API
+        const data = await fetchDataForDate(selectedDate);
+        
+        // Update background color based on sunshine hours
+        if (data.weather && data.weather.length > 0) {
+            updateBackgroundColor(data.weather[0].sunshine_duration);
+        } else {
+            // Default to cool blue if no weather data
+            document.body.style.setProperty('background-color', COOL_BLUE, 'important');
+        }
+        
+        // Update big numbers
+        updateBigNumbers(data.weather, data.publibike);
+        
+        // Destroy old charts and create new ones
+        destroyAllCharts();
+        createAndStoreCharts(data);
+        
+    } catch (error) {
+        console.error('Error updating data for date:', error);
+        // Show user-friendly error
+        alert('Error loading data for selected date. Please try again.');
     }
-    
-    // Update big numbers
-    updateBigNumbers(weatherData, publibikeData);
-    
-    // Destroy old charts first
-    destroyAllCharts();
-    
-    // Create new charts with the selected date's data
-    const modifiedData = {
-        weather: [weatherData],
-        publibike: publibikeData
-    };
-    
-    createAndStoreCharts(modifiedData);
 }
 
 // Helper function to destroy all charts
@@ -156,18 +128,19 @@ function destroyAllCharts() {
 
 // Helper function to create and store all charts
 function createAndStoreCharts(data) {
-    const sunlightChart = createChart('SunlightChart', 'sunlight', data);
-    const sunshineChart = createChart('SunshineChart', 'sunshine', data);
+    if (data.weather && data.weather.length > 0) {
+        const sunlightChart = createChart('SunlightChart', 'sunlight', data);
+        const sunshineChart = createChart('SunshineChart', 'sunshine', data);
+        
+        if (sunlightChart) charts.push(sunlightChart);
+        if (sunshineChart) charts.push(sunshineChart);
+    }
     
-    if (sunlightChart) charts.push(sunlightChart);
-    if (sunshineChart) charts.push(sunshineChart);
-    
-    // Only create velo chart if publibike data exists
-    if (data.publibike) {
+    // Create velo chart if publibike data exists
+    if (data.publibike && data.publibike.length > 0) {
         const veloChart = createVeloChart('VeloChart', data);
         if (veloChart) charts.push(veloChart);
     } else {
-        // Clear the canvas if no data
         clearVeloCanvas();
     }
 }
@@ -181,12 +154,17 @@ function clearVeloCanvas() {
     }
 }
 
-// Charts (Sunshine and Sunlight charts combined, structure from Chart.js)
+// Charts creation function
 function createChart(canvasId, chartType, apiData) {
     const canvas = document.getElementById(canvasId);
     
     if (!canvas) {
         console.error(`Canvas element with id "${canvasId}" not found`);
+        return null;
+    }
+
+    if (!apiData.weather || apiData.weather.length === 0) {
+        console.error('No weather data available for chart');
         return null;
     }
 
@@ -250,10 +228,13 @@ function createVeloChart(canvasId, apiData) {
         return null;
     }
     
+    // Calculate average if multiple entries
+    const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
+    
     const data = {
         labels: [''],
         datasets: [{
-            data: [publibikeData[0].freebikes],
+            data: [Math.round(averageFreeBikes)],
             borderColor: CHART_BLUE,
             backgroundColor: CHART_BLUE,
         }]
@@ -288,108 +269,153 @@ function createVeloChart(canvasId, apiData) {
     return new Chart(canvas, config);
 }
 
-// Helper function to calculate average publibike data
-function calculateAveragePublibikeData(publibikeData) {
-    const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
-    
-    return [{
-        created_at: 'average',
-        freebikes: Math.round(averageFreeBikes)
-    }];
-}
-
-// Function to get available dates from API data
-function getAvailableDates(apiData) {
-    const weatherDates = apiData.weather.map(entry => entry.created_at.split(' ')[0]);
-    const publibikeDates = apiData.publibike.map(entry => entry.created_at.split(' ')[0]);
-    
-    // Combine and get unique dates
-    const allDates = [...new Set([...weatherDates, ...publibikeDates])];
-    return allDates.sort();
-}
-
-// Enhanced date picker setup
+// Setup date picker
 function setupDatePicker() {
     const datePicker = document.getElementById('datePicker');
     
-    if (datePicker && globalApiData) {
-        const availableDates = getAvailableDates(globalApiData);
+    if (datePicker) {
+        // Set default to today
+        const today = new Date().toISOString().split('T')[0];
+        datePicker.value = today;
         
-        if (availableDates.length > 0) {
-            // Set min and max dates
-            datePicker.min = availableDates[0];
-            datePicker.max = availableDates[availableDates.length - 1];
-            
-            // Set default to first available date
-            datePicker.value = availableDates[0];
-        }
-        
+        // Add event listener for date changes
         datePicker.addEventListener('change', (event) => {
             const selectedDate = event.target.value;
             console.log('Date selected:', selectedDate);
-            
-            // Check if selected date has data
-            const availableDates = getAvailableDates(globalApiData);
-            if (availableDates.includes(selectedDate)) {
-                updateChartsWithDate(selectedDate, globalApiData);
-            } else {
-                alert('No data available for this date. Please select another date.');
-                // Reset to first available date
-                datePicker.value = availableDates[0];
-            }
+            updateDataForDate(selectedDate);
         });
     }
 }
 
-// Initialize the day view app
+// Function to toggle between day and week view
+function setView(viewType) {
+    currentView = viewType;
+    console.log('View changed to:', viewType);
+    
+    updateViewButtons(viewType);
+    
+    if (viewType === 'day') {
+        showDayView();
+    } else if (viewType === 'week') {
+        showWeekView();
+    }
+}
+
+// Function to update button appearance
+function updateViewButtons(activeView) {
+    const dayButton = document.getElementById('dayViewBtn');
+    const weekButton = document.getElementById('weekViewBtn');
+    
+    if (dayButton && weekButton) {
+        dayButton.classList.remove('active');
+        weekButton.classList.remove('active');
+        
+        if (activeView === 'day') {
+            dayButton.classList.add('active');
+        } else {
+            weekButton.classList.add('active');
+        }
+    }
+}
+
+// Function to show day view
+function showDayView() {
+    console.log('Showing day view');
+    
+    const datePicker = document.getElementById('datePicker');
+    const chartsContainer = document.querySelector('.charts-container');
+    const bigNumbers = document.querySelector('.big-numbers');
+    
+    if (datePicker) datePicker.style.display = 'block';
+    if (chartsContainer) chartsContainer.style.display = 'block';
+    if (bigNumbers) bigNumbers.style.display = 'block';
+    
+    const weekContainer = document.getElementById('weekContainer');
+    if (weekContainer) weekContainer.style.display = 'none';
+    
+    // Load data for current selected date
+    if (datePicker && datePicker.value) {
+        updateDataForDate(datePicker.value);
+    }
+}
+
+// Function to show week view
+function showWeekView() {
+    console.log('Showing week view');
+    
+    const datePicker = document.getElementById('datePicker');
+    const chartsContainer = document.querySelector('.charts-container');
+    const bigNumbers = document.querySelector('.big-numbers');
+    
+    if (datePicker) datePicker.style.display = 'none';
+    if (chartsContainer) chartsContainer.style.display = 'none';
+    if (bigNumbers) bigNumbers.style.display = 'none';
+    
+    let weekContainer = document.getElementById('weekContainer');
+    if (!weekContainer) {
+        weekContainer = createWeekContainer();
+    }
+    weekContainer.style.display = 'block';
+    
+    destroyAllCharts();
+    document.body.style.setProperty('background-color', '#f5f5f5', 'important');
+}
+
+// Function to create week view container
+function createWeekContainer() {
+    const weekContainer = document.createElement('div');
+    weekContainer.id = 'weekContainer';
+    weekContainer.className = 'week-container';
+    weekContainer.innerHTML = `
+        <div class="week-content">
+            <h2>Week View</h2>
+            <p>Week view coming soon...</p>
+            <p>This will show combined data for the selected week.</p>
+        </div>
+    `;
+    
+    const mainContent = document.querySelector('.main-content') || document.body;
+    mainContent.appendChild(weekContainer);
+    
+    return weekContainer;
+}
+
+// Function to setup view buttons
+function setupViewButtons() {
+    const dayButton = document.getElementById('dayViewBtn');
+    const weekButton = document.getElementById('weekViewBtn');
+    
+    if (dayButton) {
+        dayButton.addEventListener('click', () => setView('day'));
+    }
+    
+    if (weekButton) {
+        weekButton.addEventListener('click', () => setView('week'));
+    }
+    
+    updateViewButtons('day');
+}
+
+// Initialize the application
 async function initApp() {
     try {
-        const data = await fetchData();
+        console.log('Initializing app...');
         
-        // Store data globally so we can use it when date changes
-        globalApiData = data;
-        
-        // Validate data structure
-        if (!data.weather || !Array.isArray(data.weather) || data.weather.length === 0) {
-            throw new Error('Invalid weather data structure');
-        }
-        
-        if (!data.publibike || !Array.isArray(data.publibike) || data.publibike.length === 0) {
-            throw new Error('Invalid publibike data structure');
-        }
-
-        // Set initial background color based on first weather entry
-        updateBackgroundColor(data.weather[0].sunshine_duration);
-
-        // Clear existing charts
-        destroyAllCharts();
-
-        // For initial load, always show average of all publibike data
-        const averagedData = {
-            weather: data.weather,
-            publibike: calculateAveragePublibikeData(data.publibike)
-        };
-        
-        // Update big numbers with initial data
-        updateBigNumbers(data.weather[0], averagedData.publibike);
-        
-        // Create charts with initial data
-        createAndStoreCharts({
-            weather: data.weather,
-            publibike: averagedData.publibike
-        });
-        
-        // Setup date picker after data is loaded
+        // Setup date picker and view buttons
         setupDatePicker();
+        setupViewButtons();
         
-        console.log('Day app initialized successfully');
+        // Start in day view with today's data
+        setView('day');
+        
+        console.log('App initialized successfully');
         
     } catch (error) {
-        console.error('Failed to initialize day app:', error);
+        console.error('Failed to initialize app:', error);
     }
 }
 
-// Call the init function when the page loads
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
