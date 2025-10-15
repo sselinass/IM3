@@ -89,7 +89,7 @@ function createWeatherChart(weekData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Sonnenstunden',
+                label: 'sonnenstunden',
                 data: sunshineData,
                 borderColor: SUNSHINE_YELLOW,
                 backgroundColor: LIGHT_YELLOW,
@@ -99,7 +99,7 @@ function createWeatherChart(weekData) {
                 pointRadius: 6,
                 pointHoverRadius: 8
             }, {
-                label: 'Tageslichtzeit',
+                label: 'tageslichtzeit',
                 data: daylightData,
                 borderColor: WARM_YELLOW,
                 backgroundColor: WARM_YELLOW + '40',
@@ -116,7 +116,7 @@ function createWeatherChart(weekData) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Sonnenstunden und Tageslichtzeit - Wochenansicht',
+                    text: 'sonnenstunden und tageslichtzeit - wochenansicht',
                     font: {
                         size: 16
                     }
@@ -131,7 +131,7 @@ function createWeatherChart(weekData) {
                     max: 24,
                     title: {
                         display: true,
-                        text: 'Stunden'
+                        text: 'stunden'
                     }
                 }
             }
@@ -157,7 +157,7 @@ function createPublibikeChart(weekData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Verfügbare PubliBikes',
+                label: 'verfügbare PubliBikes',
                 data: freeBikesData,
                 borderColor: CHART_BLUE,
                 backgroundColor: LIGHT_BLUE,
@@ -174,7 +174,7 @@ function createPublibikeChart(weekData) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Verfügbare PubliBikes - Wochenansicht (von 8572 gesamt)',
+                    text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)',
                     font: {
                         size: 16
                     }
@@ -189,7 +189,7 @@ function createPublibikeChart(weekData) {
                     max: 8572,
                     title: {
                         display: true,
-                        text: 'Anzahl PubliBikes'
+                        text: 'anzahl publibikes'
                     }
                 }
             }
