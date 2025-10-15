@@ -190,7 +190,7 @@ function createWeatherChart(weekData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Sunshine Hours',
+                label: 'sonnenstunden',
                 data: sunshineData,
                 borderColor: SUNSHINE_YELLOW,
                 backgroundColor: LIGHT_YELLOW,
@@ -198,7 +198,7 @@ function createWeatherChart(weekData) {
                 fill: false,
                 tension: 0.1
             }, {
-                label: 'Daylight Hours',
+                label: 'tageslichtzeit',
                 data: daylightData,
                 borderColor: WARM_YELLOW,
                 backgroundColor: WARM_YELLOW + '40',
@@ -212,7 +212,7 @@ function createWeatherChart(weekData) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Sunshine & Daylight Hours - Week View'
+                    text: 'sonnenstunden und tageslichtzeit - wochenansicht'
                 }
             },
             scales: {
@@ -221,7 +221,7 @@ function createWeatherChart(weekData) {
                     max: 24,
                     title: {
                         display: true,
-                        text: 'Hours'
+                        text: 'stunden'
                     }
                 }
             }
@@ -245,7 +245,7 @@ function createPublibikeChart(weekData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Available Bikes',
+                label: 'verfügbare publibikes',
                 data: freeBikesData,
                 borderColor: CHART_BLUE,
                 backgroundColor: LIGHT_BLUE,
@@ -259,7 +259,7 @@ function createPublibikeChart(weekData) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'PubliBike Data - Week View'
+                    text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)'
                 }
             },
             scales: {
@@ -267,7 +267,7 @@ function createPublibikeChart(weekData) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: 'Number of Bikes'
+                        text: 'anzahl publibikes'
                     }
                 }
             }
