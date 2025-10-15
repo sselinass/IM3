@@ -341,7 +341,7 @@ function setupDatePicker() {
     }
 }
 
-// Update initApp to setup date picker after data is loaded
+// Initialize the day view app
 async function initApp() {
     try {
         const data = await fetchData();
@@ -382,14 +382,14 @@ async function initApp() {
         // Setup date picker after data is loaded
         setupDatePicker();
         
-        console.log('App initialized successfully');
+        console.log('Day app initialized successfully');
         
     } catch (error) {
-        console.error('Failed to initialize app:', error);
+        console.error('Failed to initialize day app:', error);
     }
 }
 
 // Call the init function when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    initApp(); // setupDatePicker is now called inside initApp
+    initApp();
 });

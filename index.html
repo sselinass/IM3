@@ -9,15 +9,15 @@
     <title>ride&shine</title>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="view-navigation">
+        <a href="index.html" class="nav-link active">Day View</a>
+        <a href="week-view.html" class="nav-link">Week View</a>
+    </nav>
+
     <div>
         <h1>RIDE & SHINE BERN</h1>
         <h2>Der Vergleich von Sonnenstunden und Fahrverhalten in Bern</h2>
-    </div>
-
-    <div id="viewButtonsContainer">
-        <p>Tages- oder Wochenansicht:</p>
-        <button id="dayView">Tag</button>
-        <button id="weekView">Woche</button>
     </div>
 
     <div id="datePickerContainer">
@@ -66,7 +66,7 @@
         <h2>... verfügbare Velos in den Stationen</h2>
     </div>
     
-    <script type="module" src="js/script.js"></script> <!-- kommt ganz am Schluss -->
+    <script type="module" src="js/day-script.js"></script> <!-- changed from script.js to day-script.js -->
     <!--  evtl. weitere JS verlinken -->
 </body>
 </html>
