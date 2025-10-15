@@ -83,28 +83,148 @@ function getAvailableDates(apiData) {
     return Array.from(dates).sort();
 }
 
-// Update charts with selected date data
-function updateChartsWithDate(selectedDate, apiData) {
-    console.log('Updating charts for date:', selectedDate);
+// Function to get week data starting from selected date
+function getWeekData(selectedDate, apiData) {
+    const startDate = new Date(selectedDate);
+    const weekData = [];
     
-    // Find data for the selected date
-    const weatherData = findWeatherDataByDate(selectedDate, apiData);
-    const publibikeData = findPublibikeDataByDate(selectedDate, apiData);
+    for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(startDate);
+        currentDate.setDate(startDate.getDate() + i);
+        const dateString = currentDate.toISOString().split('T')[0];
+        
+        const weatherData = findWeatherDataByDate(dateString, apiData);
+        const publibikeData = findPublibikeDataByDate(dateString, apiData);
+        
+        weekData.push({
+            date: dateString,
+            dayName: currentDate.toLocaleDateString('de-DE', { weekday: 'short' }),
+            weather: weatherData !== 'date not in data' ? weatherData : null,
+            publibike: publibikeData
+        });
+    }
+    
+    return weekData;
+}
+
+// Function to create weather chart with week data
+function createWeatherChart(weekData) {
+    const ctx = document.getElementById('weatherChart').getContext('2d');
+    
+    const labels = weekData.map(day => day.dayName);
+    const sunshineData = weekData.map(day => day.weather ? day.weather.sunshine_hours : 0);
+    const daylightData = weekData.map(day => day.weather ? day.weather.daylight_hours : 0);
+    
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sunshine Hours',
+                data: sunshineData,
+                borderColor: SUNSHINE_YELLOW,
+                backgroundColor: LIGHT_YELLOW,
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }, {
+                label: 'Daylight Hours',
+                data: daylightData,
+                borderColor: WARM_YELLOW,
+                backgroundColor: WARM_YELLOW + '40',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Sunshine & Daylight Hours - Week View'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 24,
+                    title: {
+                        display: true,
+                        text: 'Hours'
+                    }
+                }
+            }
+        }
+    });
+    
+    return chart;
+}
+
+// Function to create publibike chart with week data
+function createPublibikeChart(weekData) {
+    const ctx = document.getElementById('publibikeChart').getContext('2d');
+    
+    const labels = weekData.map(day => day.dayName);
+    const freeBikesData = weekData.map(day => 
+        day.publibike && day.publibike.length > 0 ? day.publibike[0].freebikes : 0
+    );
+    
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Available Bikes',
+                data: freeBikesData,
+                borderColor: CHART_BLUE,
+                backgroundColor: LIGHT_BLUE,
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'PubliBike Data - Week View'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Bikes'
+                    }
+                }
+            }
+        }
+    });
+    
+    return chart;
+}
+
+// Update charts with selected date data (now shows week starting from selected date)
+function updateChartsWithDate(selectedDate, apiData) {
+    console.log('Updating charts for week starting:', selectedDate);
+    
+    // Get week data starting from selected date
+    const weekData = getWeekData(selectedDate, apiData);
     
     // Destroy existing charts
     charts.forEach(chart => chart.destroy());
     charts = [];
     
-    // Create/update your charts here based on the selected date
-    if (weatherData && weatherData !== 'date not in data') {
-        console.log('Weather data for selected date:', weatherData);
-        // Add your weather chart creation logic here
-    }
+    // Create weather chart
+    const weatherChart = createWeatherChart(weekData);
+    charts.push(weatherChart);
     
-    if (publibikeData) {
-        console.log('Publibike data for selected date:', publibikeData);
-        // Add your publibike chart creation logic here
-    }
+    // Create publibike chart
+    const publibikeChart = createPublibikeChart(weekData);
+    charts.push(publibikeChart);
 }
 
 // Setup date picker functionality
