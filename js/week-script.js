@@ -154,12 +154,16 @@ function createPublibikeChart(weekData) {
     const labels = weekData.map(day => day.dayName);
     const freeBikesData = weekData.map(day => day.publibike || 0);
     
+    // Calculate dynamic max value with some padding
+    const maxValue = Math.max(...freeBikesData);
+    const dynamicMax = Math.ceil(maxValue * 1.2); // Add 20% padding above highest value
+    
     const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'verfügbare PubliBikes',
+                label: 'verfügbare publibikes (von total 8572)',
                 data: freeBikesData,
                 borderColor: CHART_BLUE,
                 backgroundColor: LIGHT_BLUE,
@@ -174,13 +178,6 @@ function createPublibikeChart(weekData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                // title: {
-                //     display: true,
-                //     text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)',
-                //     font: {
-                //         size: 16
-                //     }
-                // },
                 legend: {
                     position: 'top'
                 }
@@ -188,7 +185,7 @@ function createPublibikeChart(weekData) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 8572,
+                    max: dynamicMax, // Use calculated dynamic max instead of 8572
                     title: {
                         display: true,
                         text: 'anzahl publibikes'
