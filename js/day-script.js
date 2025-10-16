@@ -19,49 +19,93 @@ async function fetchDataForDate(date) {
     }
 }
 
+// Add loading states and smooth transitions
+function showLoadingState() {
+    const bigNumbers = document.querySelectorAll('.number-value');
+    bigNumbers.forEach(element => {
+        element.style.opacity = '0.5';
+        element.textContent = '...';
+    });
+    
+    // Add loading overlay to chart containers
+    const chartContainers = document.querySelectorAll('.chart-container');
+    chartContainers.forEach(container => {
+        container.style.opacity = '0.5';
+        container.style.pointerEvents = 'none';
+    });
+}
+
+function hideLoadingState() {
+    const bigNumbers = document.querySelectorAll('.number-value');
+    bigNumbers.forEach(element => {
+        element.style.opacity = '1';
+    });
+    
+    const chartContainers = document.querySelectorAll('.chart-container');
+    chartContainers.forEach(container => {
+        container.style.opacity = '1';
+        container.style.pointerEvents = 'auto';
+    });
+}
+
 // Update the big number displays
 function updateBigNumbers(weatherData, publibikeData) {
-    // Update sunlight duration
+    // Update sunlight duration with smooth transition
     const sunlightElement = document.getElementById('sunlightNumber');
     if (sunlightElement) {
         const numberValue = sunlightElement.querySelector('.number-value');
         if (numberValue) {
-            if (weatherData && weatherData.length > 0) {
-                numberValue.textContent = Math.round(weatherData[0].daylight_duration);
-                console.log('Updated sunlight to:', Math.round(weatherData[0].daylight_duration));
-            } else {
-                numberValue.textContent = '—';
-                console.log('No sunlight data, showing dash');
-            }
+            // Add transition effect
+            numberValue.style.transition = 'opacity 0.3s ease';
+            numberValue.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (weatherData && weatherData.length > 0) {
+                    numberValue.textContent = Math.round(weatherData[0].daylight_duration);
+                } else {
+                    numberValue.textContent = '—';
+                }
+                numberValue.style.opacity = '1';
+            }, 150);
         }
     }
     
-    // Update sunshine duration
+    // Update sunshine duration with smooth transition
     const sunshineElement = document.getElementById('sunshineNumber');
     if (sunshineElement) {
         const numberValue = sunshineElement.querySelector('.number-value');
         if (numberValue) {
-            if (weatherData && weatherData.length > 0) {
-                numberValue.textContent = Math.round(weatherData[0].sunshine_duration);
-                console.log('Updated sunshine to:', Math.round(weatherData[0].sunshine_duration));
-            } else {
-                numberValue.textContent = '—';
-                console.log('No sunshine data, showing dash');
-            }
+            numberValue.style.transition = 'opacity 0.3s ease';
+            numberValue.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (weatherData && weatherData.length > 0) {
+                    numberValue.textContent = Math.round(weatherData[0].sunshine_duration);
+                } else {
+                    numberValue.textContent = '—';
+                }
+                numberValue.style.opacity = '1';
+            }, 150);
         }
     }
     
-    // Update available bikes
+    // Update available bikes with smooth transition
     const veloElement = document.getElementById('veloNumber');
     if (veloElement) {
         const numberValue = veloElement.querySelector('.number-value');
-        if (publibikeData && publibikeData.length > 0) {
-            const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
-            numberValue.textContent = Math.round(averageFreeBikes);
-            console.log('Updated velo to:', Math.round(averageFreeBikes));
-        } else {
-            numberValue.textContent = '—';
-            console.log('No velo data, showing dash');
+        if (numberValue) {
+            numberValue.style.transition = 'opacity 0.3s ease';
+            numberValue.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (publibikeData && publibikeData.length > 0) {
+                    const averageFreeBikes = publibikeData.reduce((sum, entry) => sum + entry.freebikes, 0) / publibikeData.length;
+                    numberValue.textContent = Math.round(averageFreeBikes);
+                } else {
+                    numberValue.textContent = '—';
+                }
+                numberValue.style.opacity = '1';
+            }, 150);
         }
     }
 }
@@ -114,6 +158,10 @@ function createDayChart(canvasId, chartType, apiData) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 800,
+                easing: 'easeInOutQuart'
+            },
             plugins: {
                 legend: {
                     position: 'top',
@@ -163,6 +211,10 @@ function createVeloChart(canvasId, apiData) {
             },
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 800,
+                easing: 'easeInOutQuart'
+            },
             plugins: {
                 legend: {
                     display: false
@@ -185,7 +237,13 @@ async function updateDataForDate(selectedDate) {
     try {
         console.log('Updating data for date:', selectedDate);
         
+        // Show loading state immediately
+        showLoadingState();
+        
         const data = await fetchDataForDate(selectedDate);
+        
+        // Small delay to prevent jarring instant updates
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         if (data.weather && data.weather.length > 0) {
             updateBackgroundColor(data.weather[0].sunshine_duration);
@@ -193,9 +251,14 @@ async function updateDataForDate(selectedDate) {
             document.body.style.setProperty('background-color', COOL_BLUE, 'important');
         }
         
+        // Update numbers with smooth transitions
         updateBigNumbers(data.weather, data.publibike);
         
+        // Destroy existing charts smoothly
         destroyAllCharts();
+        
+        // Small delay before creating new charts
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         if (data.weather && data.weather.length > 0) {
             const sunlightChart = createDayChart('SunlightChart', 'sunlight', data);
@@ -210,8 +273,12 @@ async function updateDataForDate(selectedDate) {
             if (veloChart) charts.push(veloChart);
         }
         
+        // Hide loading state after charts are created
+        hideLoadingState();
+        
     } catch (error) {
         console.error('Error updating data for date:', error);
+        hideLoadingState();
         alert('Error loading data for selected date. Please try again.');
     }
 }

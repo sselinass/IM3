@@ -117,7 +117,7 @@
         display: flex;
         align-items: center;
         margin: 20px 80px 80px 80px;
-        /* width: 100%; */
+        transition: opacity 0.3s ease;
     }
 
     #chartLeft {
@@ -148,6 +148,8 @@
         min-width: 150px;
         flex-shrink: 0;
         padding: 10px;
+        transition: opacity 0.3s ease;
+
     }
 
     .number-value {
@@ -155,6 +157,7 @@
         font-weight: bold;
         color: #333;
         line-height: 1;
+        transition: opacity 0.3s ease;
     }
 
     .number-label {
