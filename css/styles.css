@@ -1,65 +1,81 @@
 *{
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
 }
 
-/* Add basic body styling */
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    padding: 20px;
-}
 
-/* Style the main heading section */
+/* Einstiegstext, Titel */
+
 body > div:first-child {
     text-align: center;
-    margin-bottom: 20px;
+    padding: 50px 80px;
 }
 
 body > div:first-child h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 4rem;
+    font-weight: lighter;
+    color: #000000;
+    margin-bottom: 30px;
 }
 
 body > div:first-child h2 {
-    font-size: 1.2rem;
-    color: #666;
-    font-weight: normal;
+    font-size: 2rem;
+    color: #000000;
+    font-weight: lighter;
+    margin-bottom: 20px;
 }
 
+
+/* Navigation, Tages- und Wochenansicht */
+
 .view-navigation {
-    margin-bottom: 30px;
     text-align: center;
-    padding: 15px 0;
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 30px 50px;
+    border-top: #000000 0.5px solid;
+    margin: 0px 50px;
 }
 
 .view-navigation .nav-link {
     display: inline-block;
     padding: 12px 24px;
-    margin: 0 10px;
     text-decoration: none;
     background-color: #f8f9fa;
     color: #333;
     border-radius: 25px;
     transition: all 0.3s ease;
-    border: 2px solid #e0e0e0;
     font-weight: 500;
 }
 
 .view-navigation .nav-link:hover {
-    background-color: #e9ecef;
-    border-color: #007bff;
+    background-color: #ccdff7;
 }
 
 .view-navigation .nav-link.active {
     background-color: #007bff;
     color: white;
-    border-color: #007bff;
 }
+
+
+/* Datumsauswahl */
+
+#datePickerContainer {
+    margin-bottom: 30px;
+    text-align: center;
+    padding: 0;
+}
+
+#datePickerContainer input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+
+/* Charts */
 
 .chartContainer {
     display: flex;
@@ -98,26 +114,6 @@ canvas {
     color: #666;
     text-align: center;
     margin-top: 5px;
-}
-
-/* Date picker styling */
-#datePickerContainer {
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-#datePickerContainer input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-/* Section headings */
-body > div > h2 {
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.5rem;
 }
 
 .week-container {
