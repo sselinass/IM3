@@ -133,6 +133,8 @@ canvas {
     max-height: 300px;
     width: 300px;
     height: 300px;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    transition: filter 0.3s ease;
 }
 
 .big-number {
@@ -167,6 +169,7 @@ canvas {
     margin-bottom: 20px;
 }
 
+
 /* Charts Wochenansicht */
 
 .combinedChartContainer {
@@ -183,4 +186,3 @@ canvas {
     width: 400px;
     height: 400px;
 }
-
