@@ -107,7 +107,7 @@ body > div:first-child h2 {
 } 
 
 
-/* Charts */
+/* Charts Tagesansicht */
 
 .chartContainer {
     display: flex;
@@ -158,14 +158,29 @@ canvas {
     margin-top: 5px;
 }
 
-.week-container {
-    padding: 20px;
+
+/* Text Charts Wochenansicht */
+
+.date-range {
     text-align: center;
+    padding: 0 80px;
+    margin-bottom: 20px;
 }
 
-.week-content {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    padding: 40px 20px;
+/* Charts Wochenansicht */
+
+.combinedChartContainer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 20px 80px 80px 80px;
+    gap: 40px;
 }
+
+.combinedChartContainer canvas {
+    max-width: 400px;
+    max-height: 400px;
+    width: 400px;
+    height: 400px;
+}
+
