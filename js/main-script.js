@@ -83,8 +83,8 @@ function setupDatePicker() {
         const today = new Date().toISOString().split('T')[0];
         datePicker.value = today;
         
-        // Set date constraints: from 2025-10-08 to today
-        datePicker.min = '2025-10-08';
+        // Set date constraints: from 2025-10-09 to today
+        datePicker.min = '2025-10-09';
         datePicker.max = today;
         
         datePicker.addEventListener('change', (event) => {
