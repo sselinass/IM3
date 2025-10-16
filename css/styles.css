@@ -1,188 +1,188 @@
-*{
-    margin: 0;
-    padding: 0;
-    font-family: 'Montserrat', sans-serif;
-}
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', sans-serif;
+    }
 
 
-/* Einstiegstext, Titel */
+    /* Einstiegstext, Titel */
 
-body > div:first-child {
-    text-align: center;
-    padding: 50px 80px;
-}
+    body > div:first-child {
+        text-align: center;
+        padding: 50px 80px;
+    }
 
-body > div:first-child h1 {
-    font-size: 4rem;
-    font-weight: lighter;
-    color: #000000;
-    margin-bottom: 30px;
-}
+    body > div:first-child h1 {
+        font-size: 4rem;
+        font-weight: lighter;
+        color: #000000;
+        margin-bottom: 30px;
+    }
 
-body > div:first-child h2 {
-    font-size: 2rem;
-    color: #000000;
-    font-weight: lighter;
-    margin-bottom: 20px;
-}
-
-
-/* Navigation, Tages- und Wochenansicht */
-
-.view-navigation {
-    text-align: center;
-    padding: 30px 50px;
-    border-top: #000000 0.5px solid;
-    margin: 0px 50px;
-}
-
-.view-navigation .nav-link {
-    display: inline-block;
-    padding: 12px 24px;
-    text-decoration: none;
-    background-color: #f8f9fa;
-    color: #333;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.view-navigation .nav-link:hover {
-    background-color: #ccdff7;
-}
-
-.view-navigation .nav-link.active {
-    background-color: #007bff;
-    color: white;
-}
+    body > div:first-child h2 {
+        font-size: 2rem;
+        color: #000000;
+        font-weight: lighter;
+        margin-bottom: 20px;
+    }
 
 
-/* Datumsauswahl */
+    /* Navigation, Tages- und Wochenansicht */
 
-#datePickerContainer {
-    margin-bottom: 10rem;
-    text-align: center;
-    padding: 0;
-}
+    .view-navigation {
+        text-align: center;
+        padding: 30px 50px;
+        border-top: #000000 0.5px solid;
+        margin: 0px 50px;
+    }
 
-#datePickerContainer input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    margin: 0 auto;
-    display: inline-block;
-}
+    .view-navigation .nav-link {
+        display: inline-block;
+        padding: 12px 24px;
+        text-decoration: none;
+        background-color: #f8f9fa;
+        color: #333;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
 
+    .view-navigation .nav-link:hover {
+        background-color: #ccdff7;
+    }
 
-/* Info-Text Charts */
-
-.info-text-left,
-.info-text-right,
-.info-text-middle {
-    margin: 0px 80px;
-}
-
-.info-text-left h2,
-.info-text-right h2,
-.info-text-middle h2 {
-    font-size: 2rem;
-    color: #000000;
-    font-weight: lighter;
-}
-
-.info-text-left {
-    text-align: left;
-    margin-right: 50%;
-}
-
-.info-text-right {
-    text-align: right;
-    margin-left: 50%;
-}
-
-.info-text-middle {
-    text-align: center;
-    margin-bottom: 5rem;
-} 
+    .view-navigation .nav-link.active {
+        background-color: #007bff;
+        color: white;
+    }
 
 
-/* Charts Tagesansicht */
+    /* Datumsauswahl */
 
-.chartContainer {
-    display: flex;
-    align-items: center;
-    margin: 20px 80px 80px 80px;
-    /* width: 100%; */
-}
+    #datePickerContainer {
+        margin-bottom: 10rem;
+        text-align: center;
+        padding: 0;
+    }
 
-#chartLeft {
-    justify-content: flex-start;
-}
-
-#chartRight {
-    justify-content: flex-end;
-}
-
-#chartMiddle {
-    justify-content: center;
-}
-
-canvas {
-    max-width: 300px;
-    max-height: 300px;
-    width: 300px;
-    height: 300px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-    transition: filter 0.3s ease;
-}
-
-.big-number {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 150px;
-    flex-shrink: 0;
-    padding: 10px;
-}
-
-.number-value {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #333;
-    line-height: 1;
-}
-
-.number-label {
-    font-size: 0.9rem;
-    color: #666;
-    text-align: center;
-    margin-top: 5px;
-}
+    #datePickerContainer input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        margin: 0 auto;
+        display: inline-block;
+    }
 
 
-/* Text Charts Wochenansicht */
+    /* Info-Text Charts */
 
-.date-range {
-    text-align: center;
-    padding: 0 80px;
-    margin-bottom: 20px;
-}
+    .info-text-left,
+    .info-text-right,
+    .info-text-middle {
+        margin: 0px 80px;
+    }
+
+    .info-text-left h2,
+    .info-text-right h2,
+    .info-text-middle h2 {
+        font-size: 2rem;
+        color: #000000;
+        font-weight: lighter;
+    }
+
+    .info-text-left {
+        text-align: left;
+        margin-right: 50%;
+    }
+
+    .info-text-right {
+        text-align: right;
+        margin-left: 50%;
+    }
+
+    .info-text-middle {
+        text-align: center;
+        margin-bottom: 5rem;
+    } 
 
 
-/* Charts Wochenansicht */
+    /* Charts Tagesansicht */
 
-.combinedChartContainer {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 20px 80px 80px 80px;
-    gap: 40px;
-}
+    .chartContainer {
+        display: flex;
+        align-items: center;
+        margin: 20px 80px 80px 80px;
+        /* width: 100%; */
+    }
 
-.combinedChartContainer canvas {
-    max-width: 400px;
-    max-height: 400px;
-    width: 400px;
-    height: 400px;
-}
+    #chartLeft {
+        justify-content: flex-start;
+    }
+
+    #chartRight {
+        justify-content: flex-end;
+    }
+
+    #chartMiddle {
+        justify-content: center;
+    }
+
+    canvas {
+        max-width: 300px;
+        max-height: 300px;
+        width: 300px;
+        height: 300px;
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        transition: filter 0.3s ease;
+    }
+
+    .big-number {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 150px;
+        flex-shrink: 0;
+        padding: 10px;
+    }
+
+    .number-value {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #333;
+        line-height: 1;
+    }
+
+    .number-label {
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+
+    /* Text Charts Wochenansicht */
+
+    .date-range {
+        text-align: center;
+        padding: 0 80px;
+        margin-bottom: 20px;
+    }
+
+
+    /* Charts Wochenansicht */
+
+    .combinedChartContainer {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin: 20px 80px 80px 80px;
+        gap: 40px;
+    }
+
+    .combinedChartContainer canvas {
+        max-width: 400px;
+        max-height: 400px;
+        width: 400px;
+        height: 400px;
+    }

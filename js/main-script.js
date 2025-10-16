@@ -2,11 +2,11 @@
 const DAY_API_URL = 'https://im3.selina-schoepfer.ch/php/unload_day.php';
 const WEEK_API_URL = 'https://im3.selina-schoepfer.ch/php/unload_week.php';
 const WARM_YELLOW = '#f1e19e';
-const COOL_BLUE = '#9fd1ff';
+const COOL_BLUE = '#bed5f9ed';
 const CHART_BLUE = '#76acfdff';
-const LIGHT_BLUE = '#c6dde8ff';
+const LIGHT_BLUE = '#cff0ffff';
 const SUNSHINE_YELLOW = '#FFD700';
-const LIGHT_YELLOW = '#fdff80ff';
+const LIGHT_YELLOW = '#fafc96ff';
 
 // Global variables
 let charts = [];

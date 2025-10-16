@@ -262,7 +262,7 @@ function showWeekView() {
     currentView = 'week';
     
     // No need to hide/show elements since this is a dedicated page
-    document.body.style.setProperty('background-color', '#f5f5f5', 'important');
+    document.body.style.setProperty('background-color', '#fff4ceff', 'important');
     
     const datePicker = document.getElementById('datePicker');
     const startDate = datePicker ? datePicker.value : new Date().toISOString().split('T')[0];
