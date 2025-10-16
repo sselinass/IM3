@@ -114,13 +114,15 @@ function createWeatherChart(weekData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                title: {
-                    display: true,
-                    text: 'sonnenstunden und tageslichtzeit - wochenansicht',
-                    font: {
-                        size: 16
-                    }
-                },
+                // title: {
+                //     display: true,
+                //     text: 'sonnenstunden und tageslichtzeit - wochenansicht',
+                //     font: {
+                //         fontFamily: 'Montserrat, sans-serif',
+                //         fontWeight: 'light',
+                //         fontSize: 16
+                //     }
+                // },
                 legend: {
                     position: 'top'
                 }
@@ -172,13 +174,13 @@ function createPublibikeChart(weekData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                title: {
-                    display: true,
-                    text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)',
-                    font: {
-                        size: 16
-                    }
-                },
+                // title: {
+                //     display: true,
+                //     text: 'verfügbare publibikes - wochenansicht (von 8572 gesamt)',
+                //     font: {
+                //         size: 16
+                //     }
+                // },
                 legend: {
                     position: 'top'
                 }
