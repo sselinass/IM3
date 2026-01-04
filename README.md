@@ -36,6 +36,7 @@ Für mein Projekt habe ich folgende Ressourcen als Unterstützung genutzt:
     - Unterstützung für: Datumsauswahl und created_at einzubauen | Datenbereinigung, da einige Datensätze mehrfach in die Datenbank geschrieben wurden
 - ChatGPT/Gemini: Ich arbeitete viel mit der KI um meine Gedanken umzusetzen - vorallem bei den unterschiedlichen Funktionen und dem DatePicker nutzte ich die KI, da ich Anfangs noch sehr unsicher war und Unterstützung brauchte. Mit der Erklär-/Coachingrolle der KI konnte ich diese dann gut verstehen und meine eigenen Gedanken umsetzen. 
 - VS Code Copilot: Der Copilot war sehr nützlich um einen strukturierten Code aufzubauen und den Code effizient aufzubauen
+- Chart.js für Grafiken
 - Ebenfalls haben mir Mitstudierende immer wieder geholfen, wenn ich auf Schwierigkeiten gestossen bin oder eine zweite Meinunge/zweiten Gedankengang brauchte.
 - W3schools: https://www.w3schools.com/css/default.asp
 
