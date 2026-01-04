@@ -18,7 +18,9 @@ Mit den Durchschnittswerten der Publibikes sind die Zahlen nicht ganz so aussage
 
 Beim php Code habe ich stark gelernt, alles Relevante bereits möglichst früh zu filtern und auch bereits einzubauen. Am besten gelernt/erkannt habe ich das mit dem "created_at", um bei der Datumsauswahl nur die gewünschten Daten angezeigt zu bekommen. 
 
-Ebenfalls ein Learning bestand darin, dass ich zuerst mehrere gleiche Einträge zu einer Abfrage erhalten habe. 
+Ebenfalls ein Learning bestand darin, dass ich zuerst mehrere gleiche Einträge zu einer Abfrage erhalten habe. Dies konnte ich dann aber noch bereinigen, da ich Anfangs die Datenbank kontrollierte und es mir so zeitnah aufgefallen ist. 
+
+Ebenfalls eine Schwierigkeit bestand darin
 
 
 # benutzte Ressourcen und Prompts
