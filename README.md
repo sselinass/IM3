@@ -29,5 +29,7 @@ Für mein Projekt habe ich folgende Ressourcen als Unterstützung genutzt:
 - W3schools: https://www.w3schools.com/css/default.asp
 
 API's:
+
 https://api.citybik.es/v2/
+
 https://open-meteo.com/en/docs?ref=freepublicapis.com
