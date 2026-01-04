@@ -14,11 +14,13 @@ Es wurden alle vorhanden Publibike Zahlen im Raum Bern zusammengenommen und die 
 
 # Learnings und Schwierigkeiten
 
-Mit den Durchschnittswerten der Publibikes sind die Zahlen nicht ganz so aussagekräftig wie in der Anfangs-Idee gedacht. Da ich dort aber zuerst von anderen Werten ausgegangen bin, hat sich die Aussagekraft deutlich verkleinert. Daraus lerne ich, dass ich die Anfangsidee mit den Daten besser durchdenke bevor ich mit der Datenvisualisierungsidee beginne. Die beiden API's konnte ich aber gut miteinander verknüpfen und die für mich relevanten Daten in die Datenbank laden. 
+Mit den Durchschnittswerten der Publibikes sind die Zahlen nicht ganz so aussagekräftig wie in der Anfangs-Idee angedacht. Da ich dort aber zuerst von anderen Werten ausgegangen bin, hat sich die Aussagekraft deutlich verkleinert. Daraus lerne ich, dass ich die Anfangsidee mit den Daten besser durchdenke bevor ich mit der Datenvisualisierungsidee beginne. Die beiden API's konnte ich aber gut miteinander verknüpfen und die für mich relevanten Daten in die Datenbank laden. 
 
-Beim php Code habe ich stark gelernt, alles Relevante bereits möglichst früh zu filtern und auch bereits einzubauen. Am besten gelernt/erkannt habe ich das mit dem "created_at", um bei der Datumsauswahl nur die gewünschten Daten angezeigt zu bekommen. 
+Beim php Code habe ich stark gelernt, alles Relevante bereits möglichst früh zu filtern und auch bereits einzubauen. Am besten gelernt/erkannt habe ich das mit dem "created_at", um bei der Datumsauswahl nur die gewünschten Daten angezeigt zu bekommen. Mit dem hatte ich Anfangs bis zum js gewartet, was dann zu Schwierigkeiten führte, weshalb ich dann nochmals die php's überarbeitete.  
 
-Ebenfalls ein Learning bestand darin, dass ich zuerst mehrere gleiche Einträge zu einer Abfrage erhalten habe. Dies konnte ich dann aber noch bereinigen, da ich Anfangs die Datenbank kontrollierte und es mir so zeitnah aufgefallen ist. 
+Ebenfalls ein Learning bestand darin, dass ich zuerst mehrere gleiche Einträge in die Datenbank zu einer Abfrage erhalten habe. Dies konnte ich dann aber noch bereinigen, da ich Anfangs die Datenbank kontrollierte und es mir so zeitnah aufgefallen ist. 
+
+Die meisten Schwierigkeiten hatte ich beim Erstellen der Funktionen, da ich unischer war, wie sie aufgebaut werden müssen und was genau alles rein muss. Da brauchte ich die grösste Unterstützung in den Coachings und durch die KI, am Schluss klappte aber alles so wie ich wollte und es ist mir nun verständlicher. 
 
 # Fazit
 
