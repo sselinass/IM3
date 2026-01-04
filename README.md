@@ -20,8 +20,11 @@ Beim php Code habe ich stark gelernt, alles Relevante bereits möglichst früh z
 
 Ebenfalls ein Learning bestand darin, dass ich zuerst mehrere gleiche Einträge zu einer Abfrage erhalten habe. Dies konnte ich dann aber noch bereinigen, da ich Anfangs die Datenbank kontrollierte und es mir so zeitnah aufgefallen ist. 
 
-Ebenfalls eine Schwierigkeit bestand darin
+# Fazit
 
+Ich bin mit dem technischen Teil sehr zufrieden und konnte nachvollziehen, was die Schritte auslösen und wie sie funktionieren. Auch wenn ich viel mit ChatGPT und Copilot gearbeitet habe, verstehe ich die Schritte und weiss, wo ich eingreifen muss um gewünschte Änderungen vorzunehmen. 
+
+Am Schluss des Projekts ist mir jedoch klargeworden, dass ich nach dem technischen Teil nur wenig Zeit in das Design investiert habe und das darunter etwas gelitten hat. Durchdas ich alleine am Projekt gearbeitet habe und es mir persönlich wichtiger war, den technischen Teil zu verstehen und sauber umzusetzen, habe ich die Zeit grösstenteils da investiert. Für ein weiteres Projekt werde ich darauf achten, dass ich am Schluss noch mehr Zeit in das Design investiere und mich da noch verbessern kann. 
 
 # benutzte Ressourcen und Prompts
 
@@ -29,9 +32,9 @@ Für mein Projekt habe ich folgende Ressourcen als Unterstützung genutzt:
 
 - Coachingtage direkt vor Ort 
     - Unterstützung für: Datumsauswahl und created_at einzubauen | Datenbereinigung, da einige Datensätze mehrfach in die Datenbank geschrieben wurden
-- ChatGPT/Gemini: 
-- GitHub Copilot: einfache Strukturaufgaben konnte ich so schneller und effizienter ausführen sowie gewisse Styling Vorschläge anwenden
-- Mitstudierende haben mir immer wieder geholfen wenn ich auf Schwierigkeiten gestossen bin 
+- ChatGPT/Gemini: Ich arbeitete viel mit der KI um meine Gedanken umzusetzen - vorallem bei den unterschiedlichen Funktionen und dem DatePicker nutzte ich die KI, da ich Anfangs noch sehr unsicher war und Unterstützung brauchte. Mit der Erklär-/Coachingrolle der KI konnte ich diese dann gut verstehen und meine eigenen Gedanken umsetzen. 
+- VS Code Copilot: Der Copilot war sehr nützlich um einen strukturierten Code aufzubauen und den Code effizient aufzubauen
+- Ebenfalls haben mir Mitstudierende immer wieder geholfen, wenn ich auf Schwierigkeiten gestossen bin oder eine zweite Meinunge/zweiten Gedankengang brauchte.
 - W3schools: https://www.w3schools.com/css/default.asp
 
 API's: https://api.citybik.es/v2/ | https://open-meteo.com/en/docs?ref=freepublicapis.com
